@@ -85,7 +85,7 @@ export default function Navbar() {
       <div className="flex items-center gap-8">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center -ml-4">
+        <Link href="/" className="flex items-center -ml-4 absolute top-0 left-0">
           <Image
             src="/logo.png"
             alt="MigoPlay Logo"
