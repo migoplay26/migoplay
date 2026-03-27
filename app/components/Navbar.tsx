@@ -81,41 +81,29 @@ export default function Navbar() {
   }
 
   return (
-    <header className="fixed top-0 z-50 flex w-full flex-col gap-4 bg-gradient-to-b from-black/95 to-transparent px-8 py-4 lg:flex-row lg:items-center lg:justify-between">
+    <header className="fixed top-0 z-50 flex w-full flex-row items-center bg-gradient-to-b from-black/95 to-transparent px-4 py-3 justify-between">
       <div className="flex items-center gap-8">
 
-        {/* ✅ Logo image replaces old text */}
-        <Link href="/" className="-ml-2 -mt-4">
+        {/* Logo */}
+        <Link href="/" className="flex items-center">
           <Image
             src="/logo.png"
             alt="MigoPlay Logo"
-            width={320}
-            height={100}
+            width={260}
+            height={90}
             className="object-contain drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]"
             priority
           />
         </Link>
 
         <nav className="hidden gap-6 text-sm md:flex">
-          <Link href="/" className="transition hover:text-gray-300">
-            Home
-          </Link>
-          <Link href="/browse" className="transition hover:text-gray-300">
-            Browse
-          </Link>
-          <Link href="/movies" className="transition hover:text-gray-300">
-            Movies
-          </Link>
-          <Link href="/shows" className="transition hover:text-gray-300">
-            Shows
-          </Link>
-          <Link href="/my-list" className="transition hover:text-gray-300">
-            My List
-          </Link>
+          <Link href="/" className="transition hover:text-gray-300">Home</Link>
+          <Link href="/browse" className="transition hover:text-gray-300">Browse</Link>
+          <Link href="/movies" className="transition hover:text-gray-300">Movies</Link>
+          <Link href="/shows" className="transition hover:text-gray-300">Shows</Link>
+          <Link href="/my-list" className="transition hover:text-gray-300">My List</Link>
           {isAdmin && (
-            <Link href="/admin/upload" className="transition hover:text-gray-300">
-              Admin
-            </Link>
+            <Link href="/admin/upload" className="transition hover:text-gray-300">Admin</Link>
           )}
         </nav>
       </div>
