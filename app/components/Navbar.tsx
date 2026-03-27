@@ -81,7 +81,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="fixed top-0 z-50 flex w-full flex-row items-center bg-gradient-to-b from-black/95 to-transparent px-4 py-1 justify-between">
+    <header className="fixed top-0 z-50 flex w-full flex-row items-center bg-gradient-to-b from-black/95 to-transparent px-4 py-0 justify-between">
       <div className="flex items-center gap-8">
 
         {/* Logo */}
