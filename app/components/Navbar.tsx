@@ -89,9 +89,9 @@ export default function Navbar() {
           <Image
             src="/logo.png"
             alt="MigoPlay Logo"
-            width={240}
-            height={50}
-            className="object-contain"
+            width={320}
+            height={100}
+            className="object-contain drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]"
             priority
           />
         </Link>
