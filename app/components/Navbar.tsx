@@ -85,12 +85,12 @@ export default function Navbar() {
       <div className="flex items-center gap-8">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="flex items-center -ml-4">
           <Image
             src="/logo.png"
             alt="MigoPlay Logo"
-            width={260}
-            height={90}
+            width={390}
+            height={150}
             className="object-contain drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]"
             priority
           />
