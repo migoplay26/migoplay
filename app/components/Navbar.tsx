@@ -122,14 +122,14 @@ export default function Navbar() {
         {userEmail ? (
           <button
             onClick={handleSignOut}
-            className="rounded bg-red-600 px-4 py-2 text-sm font-semibold transition hover:bg-red-700"
+            className="rounded-full border border-purple-500/30 bg-purple-900/30 px-5 py-2 text-sm font-semibold text-purple-200 backdrop-blur-sm transition hover:bg-purple-900/50 hover:shadow-[0_0_15px_rgba(168,85,247,0.3)]"
           >
             Sign Out
           </button>
         ) : (
           <Link
             href="/login"
-            className="rounded bg-red-600 px-4 py-2 text-sm font-semibold transition hover:bg-red-700"
+            className="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-[0_0_15px_rgba(168,85,247,0.4)] transition hover:shadow-[0_0_25px_rgba(168,85,247,0.6)]"
           >
             Sign In
           </Link>
