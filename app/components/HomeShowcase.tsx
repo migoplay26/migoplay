@@ -60,14 +60,14 @@ export default function HomeShowcase() {
       (row) => row.progress_seconds > 0 && !row.completed
     );
     return activeHistory
-      .map((row) => videos.find((video) => video.id === row.video_id))
+      .map((row) => videos.find((v) => v.id === row.video_id))
       .filter(Boolean) as Video[];
   }, [videos, watchHistory]);
 
   const continueWatchingIds = continueWatching.map((v) => v.id);
   const featuredVideo = videos.length > 0 ? videos[0] : null;
-  const featuredPicks = videos.slice(1, 4);
-  const latestVideos = videos.slice(0, 10);
+  const featuredPicks = videos.slice(1, 6);
+  const latestVideos = videos.slice(0, 12);
   const movies = videos.filter((v) => v.content_type === "movie");
   const shows = videos.filter((v) => v.content_type === "show");
 
@@ -87,8 +87,14 @@ export default function HomeShowcase() {
     return (
       <main className="min-h-screen bg-[#060818] text-white flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 rounded-full border-4 border-purple-500 border-t-transparent animate-spin mx-auto mb-4" />
-          <p className="text-purple-300 text-lg">Entering MigoPlay...</p>
+          <div className="relative w-24 h-24 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full border-2 border-purple-500/30 animate-ping" />
+            <div className="absolute inset-2 rounded-full border-2 border-purple-500 border-t-transparent animate-spin" />
+            <div className="absolute inset-4 rounded-full border border-pink-400/50" />
+          </div>
+          <p className="text-purple-300 text-lg tracking-widest uppercase text-sm">
+            Opening portal...
+          </p>
         </div>
       </main>
     );
@@ -98,7 +104,14 @@ export default function HomeShowcase() {
     <main className="min-h-screen bg-[#060818] text-white">
       <HeroBanner featuredVideo={featuredVideo} />
 
-      <div className="relative z-20 space-y-2 pb-16">
+      <div className="relative z-20">
+        {/* Divider */}
+        <div className="flex items-center gap-4 px-8 md:px-16 py-6">
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
+          <div className="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
+        </div>
+
         <FeaturedCarousel items={featuredPicks} />
 
         {continueWatching.length > 0 && (
@@ -112,7 +125,13 @@ export default function HomeShowcase() {
         <ContentRow title="Latest on MigoPlay" items={latestVideos} />
         <ContentRow title="Movies" items={movies} />
         <ContentRow title="Shows" items={shows} />
-        <ContentRow title="Because You Watched This Genre" items={similarGenre} />
+
+        {similarGenre.length > 0 && (
+          <ContentRow title="Because You Watched This Genre" items={similarGenre} />
+        )}
+
+        {/* Bottom glow */}
+        <div className="h-32 bg-gradient-to-t from-[#060818] to-transparent" />
       </div>
     </main>
   );
