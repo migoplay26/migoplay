@@ -23,12 +23,10 @@ function getYouTubeEmbedUrl(url: string) {
     const id = url.split("youtu.be/")[1].split("?")[0];
     return `https://www.youtube.com/embed/${id}`;
   }
-
   if (url.includes("youtube.com/watch?v=")) {
     const id = url.split("v=")[1].split("&")[0];
     return `https://www.youtube.com/embed/${id}`;
   }
-
   return null;
 }
 
@@ -61,9 +59,7 @@ export default function WatchPage() {
 
       setVideo(videoData);
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
         const { data: existing } = await supabase
@@ -106,10 +102,7 @@ export default function WatchPage() {
     };
 
     player.addEventListener("loadedmetadata", handleLoadedMetadata);
-
-    return () => {
-      player.removeEventListener("loadedmetadata", handleLoadedMetadata);
-    };
+    return () => player.removeEventListener("loadedmetadata", handleLoadedMetadata);
   }, [resumeTime, video]);
 
   useEffect(() => {
@@ -117,10 +110,7 @@ export default function WatchPage() {
       const player = videoRef.current;
       if (!player) return;
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       const currentTime = Math.floor(player.currentTime || 0);
@@ -147,9 +137,7 @@ export default function WatchPage() {
   async function handleToggleList() {
     setMessage("");
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
       setMessage("You must be logged in.");
@@ -163,33 +151,22 @@ export default function WatchPage() {
         .eq("user_id", user.id)
         .eq("video_id", Number(id));
 
-      if (error) {
-        setMessage(error.message);
-        return;
-      }
-
+      if (error) { setMessage(error.message); return; }
       setInList(false);
       setMessage("Removed from My List.");
       return;
     }
 
     const { error } = await supabase.from("my_list").insert([
-      {
-        user_id: user.id,
-        video_id: Number(id),
-      },
+      { user_id: user.id, video_id: Number(id) },
     ]);
 
     if (error) {
-      if (
-        error.message.toLowerCase().includes("duplicate") ||
-        error.message.toLowerCase().includes("unique")
-      ) {
+      if (error.message.toLowerCase().includes("duplicate") || error.message.toLowerCase().includes("unique")) {
         setInList(true);
         setMessage("This title is already in My List.");
         return;
       }
-
       setMessage(error.message);
       return;
     }
@@ -200,10 +177,13 @@ export default function WatchPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-black text-white">
+      <main className="min-h-screen bg-[#060818] text-white">
         <Navbar />
-        <div className="px-8 pt-32">
-          <p className="text-lg">Loading...</p>
+        <div className="flex items-center justify-center pt-48">
+          <div className="text-center">
+            <div className="w-16 h-16 rounded-full border-4 border-purple-500 border-t-transparent animate-spin mx-auto mb-4" />
+            <p className="text-purple-300 text-lg">Loading...</p>
+          </div>
         </div>
       </main>
     );
@@ -211,10 +191,10 @@ export default function WatchPage() {
 
   if (!video) {
     return (
-      <main className="min-h-screen bg-black text-white">
+      <main className="min-h-screen bg-[#060818] text-white">
         <Navbar />
         <div className="px-8 pt-32">
-          <h1 className="text-3xl font-bold">Video not found</h1>
+          <h1 className="text-3xl font-bold text-white">Video not found</h1>
         </div>
       </main>
     );
@@ -223,37 +203,54 @@ export default function WatchPage() {
   const youtubeEmbedUrl = getYouTubeEmbedUrl(video.video_url);
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-[#060818] text-white">
       <Navbar />
 
-      <section className="px-8 pt-32 pb-10">
-        <h1 className="text-4xl font-extrabold">{video.title}</h1>
-        <p className="mt-4 text-gray-300">{video.description}</p>
-        <p className="mt-2 text-sm text-gray-500">{video.genre}</p>
+      {/* Glow */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-purple-700/10 blur-[120px] pointer-events-none" />
+
+      <section className="relative px-8 pt-32 pb-10">
+        <div className="flex items-center gap-4 mb-3">
+          <div className="w-1 h-10 rounded-full bg-gradient-to-b from-purple-400 to-blue-500 shadow-[0_0_15px_rgba(168,85,247,0.6)]" />
+          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-white via-purple-100 to-blue-200 bg-clip-text text-transparent">
+            {video.title}
+          </h1>
+        </div>
+
+        <p className="mt-4 text-gray-300 max-w-3xl pl-5">{video.description}</p>
+
+        <div className="mt-3 pl-5">
+          <span className="rounded-full border border-purple-500/30 bg-purple-900/30 px-4 py-1 text-sm text-purple-200">
+            {video.genre}
+          </span>
+        </div>
 
         {resumeTime > 0 && !youtubeEmbedUrl && (
-          <p className="mt-4 text-sm text-yellow-300">
-            Resume available from {Math.floor(resumeTime / 60)}:
-            {String(resumeTime % 60).padStart(2, "0")}
+          <p className="mt-4 pl-5 text-sm text-yellow-300/80">
+            ⏱ Resume from {Math.floor(resumeTime / 60)}:{String(resumeTime % 60).padStart(2, "0")}
           </p>
         )}
 
-        <button
-          onClick={handleToggleList}
-          className={`mt-6 rounded px-6 py-3 font-semibold transition ${
-            inList
-              ? "bg-zinc-700 hover:bg-zinc-600"
-              : "bg-red-600 hover:bg-red-700"
-          }`}
-        >
-          {inList ? "✓ In My List" : "Add to My List"}
-        </button>
+        <div className="mt-6 pl-5 flex items-center gap-4">
+          <button
+            onClick={handleToggleList}
+            className={`rounded-full px-6 py-2.5 text-sm font-semibold transition ${
+              inList
+                ? "border border-white/20 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
+                : "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_25px_rgba(168,85,247,0.6)]"
+            }`}
+          >
+            {inList ? "✓ In My List" : "+ Add to My List"}
+          </button>
 
-        {message && <p className="mt-3 text-sm text-gray-400">{message}</p>}
+          {message && (
+            <p className="text-sm text-gray-400">{message}</p>
+          )}
+        </div>
       </section>
 
-      <section className="px-8 pb-12">
-        <div className="mx-auto max-w-5xl overflow-hidden rounded-xl bg-zinc-900">
+      <section className="px-8 pb-16">
+        <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-white/10 shadow-[0_0_40px_rgba(168,85,247,0.15)]">
           {youtubeEmbedUrl ? (
             <iframe
               width="100%"
@@ -265,7 +262,7 @@ export default function WatchPage() {
               className="w-full"
             />
           ) : (
-            <video ref={videoRef} controls className="w-full" src={video.video_url}>
+            <video ref={videoRef} controls className="w-full bg-black" src={video.video_url}>
               Your browser does not support the video tag.
             </video>
           )}
