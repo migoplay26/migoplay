@@ -21,51 +21,56 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#070b14] text-white flex items-center justify-center relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.15)_0%,_transparent_70%)]" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-blue-500/10 animate-pulse pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-amber-500/5 pointer-events-none" />
+    <main className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center relative overflow-hidden">
+      {/* Stars */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(60)].map((_, i) => (
+          <div key={i} className="absolute rounded-full bg-white"
+            style={{ width: "1.5px", height: "1.5px", top: Math.random() * 100 + "%", left: Math.random() * 100 + "%", opacity: Math.random() * 0.6 + 0.1 }} />
+        ))}
+      </div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(37,99,235,0.12)_0%,_transparent_65%)]" />
 
       <div className="relative z-10 w-full max-w-md px-4">
         <div className="flex justify-center mb-8">
           <Link href="/">
             <Image src="/logo.png" alt="MigoPlay Logo" width={720} height={240}
-              className="object-contain drop-shadow-[0_0_20px_rgba(59,130,246,0.5)]" priority />
+              className="object-contain drop-shadow-[0_0_20px_rgba(37,99,235,0.5)]" priority />
           </Link>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-8 shadow-[0_0_40px_rgba(59,130,246,0.1)]">
-          <h1 className="mb-2 text-3xl font-extrabold bg-gradient-to-r from-white via-blue-100 to-amber-200 bg-clip-text text-transparent">
-            Welcome back
-          </h1>
-          <p className="mb-6 text-sm text-gray-400">Sign in to continue your journey</p>
+        <div className="rounded-2xl border border-white/10 bg-white/4 backdrop-blur-md p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+          <h1 className="mb-1 text-3xl font-extrabold text-white">Sign In</h1>
+          <p className="mb-7 text-sm text-gray-400">Welcome back to MigoPlay</p>
 
           <form className="space-y-4" onSubmit={handleLogin}>
             <div>
-              <label className="mb-2 block text-sm text-blue-300">Email</label>
-              <input type="email" placeholder="Enter your email" value={email}
+              <label className="mb-2 block text-sm font-medium text-gray-300">Email</label>
+              <input type="email" placeholder="your@email.com" value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 backdrop-blur-sm outline-none focus:border-blue-500/50 focus:shadow-[0_0_15px_rgba(59,130,246,0.2)] transition"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-blue-500/60 focus:shadow-[0_0_15px_rgba(37,99,235,0.2)] transition"
                 required />
             </div>
             <div>
-              <label className="mb-2 block text-sm text-blue-300">Password</label>
-              <input type="password" placeholder="Enter your password" value={password}
+              <label className="mb-2 block text-sm font-medium text-gray-300">Password</label>
+              <input type="password" placeholder="••••••••" value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 backdrop-blur-sm outline-none focus:border-blue-500/50 focus:shadow-[0_0_15px_rgba(59,130,246,0.2)] transition"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-blue-500/60 focus:shadow-[0_0_15px_rgba(37,99,235,0.2)] transition"
                 required />
             </div>
             <button type="submit"
-              className="w-full rounded-full bg-gradient-to-r from-blue-600 to-amber-500 py-3 font-semibold text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] transition hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] hover:scale-[1.01]">
+              className="w-full rounded-full bg-blue-600 py-3 font-bold text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] transition hover:bg-blue-500 hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] hover:scale-[1.01]">
               Sign In
             </button>
           </form>
 
           {message && <p className="mt-4 text-sm text-gray-400">{message}</p>}
 
-          <p className="mt-6 text-sm text-gray-400 text-center">
+          <p className="mt-6 text-sm text-gray-500 text-center">
             New to MigoPlay?{" "}
-            <Link href="/signup" className="text-amber-400 hover:text-amber-300 transition">Sign up now</Link>
+            <Link href="/signup" className="text-blue-400 hover:text-blue-300 font-semibold transition">
+              Create account
+            </Link>
           </p>
         </div>
       </div>

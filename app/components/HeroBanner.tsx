@@ -14,26 +14,42 @@ type HeroBannerProps = {
 export default function HeroBanner({ featuredVideo }: HeroBannerProps) {
   if (!featuredVideo) {
     return (
-      <section className="relative flex h-screen items-center justify-center overflow-hidden bg-[#070b14]">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.2)_0%,_transparent_70%)]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-blue-500/10 animate-pulse" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-amber-500/10" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full border border-blue-400/10" />
+      <section className="relative flex h-screen items-center justify-center overflow-hidden bg-[#0a0a0f]">
+        {/* Stars background */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(80)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white"
+              style={{
+                width: Math.random() * 2 + 1 + "px",
+                height: Math.random() * 2 + 1 + "px",
+                top: Math.random() * 100 + "%",
+                left: Math.random() * 100 + "%",
+                opacity: Math.random() * 0.7 + 0.1,
+              }}
+            />
+          ))}
+        </div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(37,99,235,0.2)_0%,_transparent_65%)]" />
+
         <div className="relative z-10 text-center px-8">
-          <p className="mb-6 text-sm font-semibold uppercase tracking-[0.4em] text-amber-400">
-            Step into new worlds
-          </p>
-          <h1 className="text-7xl font-extrabold md:text-9xl bg-gradient-to-r from-blue-400 via-white to-amber-400 bg-clip-text text-transparent">
+          <div className="mb-6 flex justify-center gap-2">
+            {["✦", "✦", "✦"].map((star, i) => (
+              <span key={i} className="text-blue-400 text-lg opacity-80">✦</span>
+            ))}
+          </div>
+          <h1 className="text-7xl font-extrabold md:text-9xl text-white drop-shadow-[0_0_40px_rgba(37,99,235,0.6)]">
             MigoPlay
           </h1>
-          <p className="mt-6 text-xl text-gray-400 max-w-lg mx-auto">
-            AI-generated stories from beyond imagination
+          <p className="mt-5 text-xl text-gray-300 max-w-lg mx-auto font-light tracking-wide">
+            Where stories come to life
           </p>
           <Link
             href="/browse"
-            className="mt-10 inline-flex rounded-full bg-gradient-to-r from-blue-600 to-amber-500 px-10 py-4 font-semibold text-white shadow-[0_0_30px_rgba(59,130,246,0.4)] transition hover:shadow-[0_0_50px_rgba(245,158,11,0.5)] hover:scale-105"
+            className="mt-10 inline-flex items-center gap-2 rounded-full bg-blue-600 px-10 py-4 font-bold text-white shadow-[0_0_30px_rgba(37,99,235,0.6)] transition hover:bg-blue-500 hover:shadow-[0_0_50px_rgba(37,99,235,0.8)] hover:scale-105"
           >
-            Enter the Portal →
+            ▶ Start Watching
           </Link>
         </div>
       </section>
@@ -41,65 +57,78 @@ export default function HeroBanner({ featuredVideo }: HeroBannerProps) {
   }
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-[#070b14]">
-      <div className="absolute inset-0">
-        <img
-          src={featuredVideo.thumbnail_url}
-          alt={featuredVideo.title}
-          className="h-full w-full object-cover opacity-20"
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.25)_0%,_#070b14_70%)]" />
+    <section className="relative flex min-h-screen items-end overflow-hidden bg-[#0a0a0f]">
+      {/* Background */}
+      <img
+        src={featuredVideo.thumbnail_url}
+        alt={featuredVideo.title}
+        className="absolute inset-0 h-full w-full object-cover opacity-45"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0f] via-[#0a0a0f]/70 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/20 to-transparent" />
+
+      {/* Blue glow */}
+      <div className="absolute bottom-0 left-0 w-[600px] h-[400px] bg-blue-600/10 blur-[120px]" />
+
+      {/* Stars */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(40)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-white"
+            style={{
+              width: "1.5px",
+              height: "1.5px",
+              top: Math.random() * 60 + "%",
+              left: Math.random() * 100 + "%",
+              opacity: Math.random() * 0.5 + 0.1,
+            }}
+          />
+        ))}
       </div>
 
-      {/* Portal rings */}
-      <div className="absolute top-1/2 right-[10%] -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-blue-500/20 shadow-[0_0_80px_rgba(59,130,246,0.1)] hidden xl:block" />
-      <div className="absolute top-1/2 right-[10%] -translate-y-1/2 w-[380px] h-[380px] rounded-full border border-amber-500/15 hidden xl:block" />
-      <div className="absolute top-1/2 right-[10%] -translate-y-1/2 w-[260px] h-[260px] rounded-full border border-blue-400/20 hidden xl:block" />
+      <div className="relative z-10 max-w-3xl px-8 md:px-16 pb-24 pt-32">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="h-px w-8 bg-blue-500" />
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-400">
+            Featured {featuredVideo.content_type}
+          </p>
+        </div>
 
-      {/* Thumbnail inside portal */}
-      <div className="absolute top-1/2 right-[10%] -translate-y-1/2 w-[230px] h-[230px] rounded-full overflow-hidden hidden xl:block shadow-[0_0_60px_rgba(59,130,246,0.3)]">
-        <img
-          src={featuredVideo.thumbnail_url}
-          alt={featuredVideo.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 rounded-full border-2 border-blue-400/40" />
-      </div>
-
-      <div className="relative z-10 flex min-h-screen flex-col justify-center px-8 md:px-16 max-w-3xl">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.4em] text-amber-400">
-          Now Featuring
-        </p>
-        <h1 className="text-6xl font-extrabold md:text-8xl leading-none bg-gradient-to-r from-white via-blue-100 to-amber-200 bg-clip-text text-transparent">
+        <h1 className="mb-5 text-6xl font-extrabold leading-none text-white md:text-8xl drop-shadow-[0_2px_20px_rgba(0,0,0,0.8)]">
           {featuredVideo.title}
         </h1>
-        <p className="mt-6 max-w-xl text-lg text-gray-300 leading-relaxed">
+
+        <p className="mb-6 max-w-xl text-lg text-gray-300 leading-relaxed">
           {featuredVideo.description}
         </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <span className="rounded-full border border-blue-500/30 bg-blue-900/30 px-4 py-1.5 text-sm text-blue-200 backdrop-blur-sm">
+
+        <div className="mb-8 flex flex-wrap gap-3">
+          <span className="rounded-full border border-blue-500/40 bg-blue-950/60 px-4 py-1.5 text-sm text-blue-200 backdrop-blur-sm">
             {featuredVideo.genre}
           </span>
-          <span className="rounded-full border border-amber-500/30 bg-amber-900/20 px-4 py-1.5 text-sm text-amber-200 capitalize backdrop-blur-sm">
+          <span className="rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-sm text-gray-200 capitalize backdrop-blur-sm">
             {featuredVideo.content_type}
           </span>
         </div>
-        <div className="mt-10 flex gap-4">
+
+        <div className="flex gap-4">
           <Link
             href={`/watch/${featuredVideo.id}`}
-            className="rounded-full bg-gradient-to-r from-blue-600 to-amber-500 px-8 py-3.5 font-semibold text-white shadow-[0_0_25px_rgba(59,130,246,0.4)] transition hover:shadow-[0_0_40px_rgba(245,158,11,0.5)] hover:scale-105"
+            className="flex items-center gap-2 rounded-full bg-white px-8 py-3.5 font-bold text-black transition hover:bg-gray-100 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-105"
           >
-            ▶ Watch Now
+            ▶ Play
           </Link>
           <Link
             href={`/watch/${featuredVideo.id}`}
-            className="rounded-full border border-white/15 bg-white/5 px-8 py-3.5 font-semibold text-white backdrop-blur-sm transition hover:bg-white/10"
+            className="flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-8 py-3.5 font-semibold text-white backdrop-blur-sm transition hover:bg-white/20 hover:border-white/50"
           >
-            More Info
+            ⓘ More Info
           </Link>
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#070b14] to-transparent" />
+
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#0a0a0f] to-transparent" />
     </section>
   );
 }

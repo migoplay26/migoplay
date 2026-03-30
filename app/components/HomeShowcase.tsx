@@ -85,33 +85,27 @@ export default function HomeShowcase() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#070b14] text-white flex items-center justify-center">
+      <main className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center">
         <div className="text-center">
-          <div className="relative w-24 h-24 mx-auto mb-6">
-            <div className="absolute inset-0 rounded-full border-2 border-blue-500/30 animate-ping" />
+          <div className="relative w-20 h-20 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full border-2 border-blue-500/20 animate-ping" />
             <div className="absolute inset-2 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
-            <div className="absolute inset-4 rounded-full border border-amber-400/50" />
+            <div className="absolute inset-5 rounded-full bg-blue-500/20" />
           </div>
-          <p className="text-blue-300 text-sm tracking-widest uppercase">
-            Opening portal...
-          </p>
+          <p className="text-gray-400 text-sm tracking-widest uppercase">Loading...</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#070b14] text-white">
+    <main className="min-h-screen bg-[#0a0a0f] text-white">
       <HeroBanner featuredVideo={featuredVideo} />
 
-      <div className="relative z-20">
-        <div className="flex items-center gap-4 px-8 md:px-16 py-6">
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
-          <div className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
-        </div>
-
+      <div className="relative z-20 bg-[#0a0a0f]">
         <FeaturedCarousel items={featuredPicks} />
+
+        <div className="mx-6 md:mx-12 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-2" />
 
         {continueWatching.length > 0 && (
           <ContentRow title="Continue Watching" items={continueWatching} />
@@ -123,10 +117,10 @@ export default function HomeShowcase() {
         <ContentRow title="Movies" items={movies} />
         <ContentRow title="Shows" items={shows} />
         {similarGenre.length > 0 && (
-          <ContentRow title="Because You Watched This Genre" items={similarGenre} />
+          <ContentRow title="More Like This" items={similarGenre} />
         )}
 
-        <div className="h-32 bg-gradient-to-t from-[#070b14] to-transparent" />
+        <div className="h-16" />
       </div>
     </main>
   );
