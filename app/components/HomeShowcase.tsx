@@ -85,14 +85,14 @@ export default function HomeShowcase() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#060818] text-white flex items-center justify-center">
+      <main className="min-h-screen bg-[#070b14] text-white flex items-center justify-center">
         <div className="text-center">
           <div className="relative w-24 h-24 mx-auto mb-6">
-            <div className="absolute inset-0 rounded-full border-2 border-purple-500/30 animate-ping" />
-            <div className="absolute inset-2 rounded-full border-2 border-purple-500 border-t-transparent animate-spin" />
-            <div className="absolute inset-4 rounded-full border border-pink-400/50" />
+            <div className="absolute inset-0 rounded-full border-2 border-blue-500/30 animate-ping" />
+            <div className="absolute inset-2 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+            <div className="absolute inset-4 rounded-full border border-amber-400/50" />
           </div>
-          <p className="text-purple-300 text-lg tracking-widest uppercase text-sm">
+          <p className="text-blue-300 text-sm tracking-widest uppercase">
             Opening portal...
           </p>
         </div>
@@ -101,15 +101,14 @@ export default function HomeShowcase() {
   }
 
   return (
-    <main className="min-h-screen bg-[#060818] text-white">
+    <main className="min-h-screen bg-[#070b14] text-white">
       <HeroBanner featuredVideo={featuredVideo} />
 
       <div className="relative z-20">
-        {/* Divider */}
         <div className="flex items-center gap-4 px-8 md:px-16 py-6">
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
-          <div className="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
+          <div className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
         </div>
 
         <FeaturedCarousel items={featuredPicks} />
@@ -117,21 +116,17 @@ export default function HomeShowcase() {
         {continueWatching.length > 0 && (
           <ContentRow title="Continue Watching" items={continueWatching} />
         )}
-
         {topPicks.length > 0 && (
           <ContentRow title="Top Picks For You" items={topPicks} />
         )}
-
         <ContentRow title="Latest on MigoPlay" items={latestVideos} />
         <ContentRow title="Movies" items={movies} />
         <ContentRow title="Shows" items={shows} />
-
         {similarGenre.length > 0 && (
           <ContentRow title="Because You Watched This Genre" items={similarGenre} />
         )}
 
-        {/* Bottom glow */}
-        <div className="h-32 bg-gradient-to-t from-[#060818] to-transparent" />
+        <div className="h-32 bg-gradient-to-t from-[#070b14] to-transparent" />
       </div>
     </main>
   );

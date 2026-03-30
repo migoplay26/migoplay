@@ -14,52 +14,27 @@ export default function Navbar() {
 
   useEffect(() => {
     async function getUserAndAdminStatus() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
+      const { data: { user } } = await supabase.auth.getUser();
       const email = user?.email ?? null;
       setUserEmail(email);
-
-      if (!user) {
-        setIsAdmin(false);
-        return;
-      }
-
+      if (!user) { setIsAdmin(false); return; }
       const { data: adminRow } = await supabase
-        .from("admins")
-        .select("user_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
+        .from("admins").select("user_id").eq("user_id", user.id).maybeSingle();
       setIsAdmin(!!adminRow);
     }
 
     getUserAndAdminStatus();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const email = session?.user?.email ?? null;
       setUserEmail(email);
-
-      if (!session?.user) {
-        setIsAdmin(false);
-        return;
-      }
-
+      if (!session?.user) { setIsAdmin(false); return; }
       const { data: adminRow } = await supabase
-        .from("admins")
-        .select("user_id")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
-
+        .from("admins").select("user_id").eq("user_id", session.user.id).maybeSingle();
       setIsAdmin(!!adminRow);
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => { subscription.unsubscribe(); };
   }, []);
 
   async function handleSignOut() {
@@ -69,41 +44,45 @@ export default function Navbar() {
 
   function handleSearchSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
     const trimmed = search.trim();
-
-    if (!trimmed) {
-      router.push("/browse");
-      return;
-    }
-
+    if (!trimmed) { router.push("/browse"); return; }
     router.push(`/browse?q=${encodeURIComponent(trimmed)}`);
   }
 
   return (
-    <header className="fixed top-0 z-50 flex w-full flex-row items-center bg-gradient-to-b from-black/95 to-transparent px-4 py-0 -mt-6 justify-between">
-      <div className="flex items-center gap-8">
-
-        {/* Logo */}
+    <header className="fixed top-0 z-50 flex w-full flex-row items-center bg-[#070b14]/90 backdrop-blur-md border-b border-white/5 px-8 md:px-16 py-0 -mt-6 justify-between">
+      <div className="flex items-center gap-10">
         <Link href="/" className="flex items-center -ml-4">
           <Image
             src="/logo.png"
             alt="MigoPlay Logo"
             width={260}
             height={90}
-            className="object-contain drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]"
+            className="object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
             priority
           />
         </Link>
 
         <nav className="hidden gap-6 text-sm md:flex">
-          <Link href="/" className="transition hover:text-gray-300">Home</Link>
-          <Link href="/browse" className="transition hover:text-gray-300">Browse</Link>
-          <Link href="/movies" className="transition hover:text-gray-300">Movies</Link>
-          <Link href="/shows" className="transition hover:text-gray-300">Shows</Link>
-          <Link href="/my-list" className="transition hover:text-gray-300">My List</Link>
+          {[
+            { href: "/", label: "Home" },
+            { href: "/browse", label: "Browse" },
+            { href: "/movies", label: "Movies" },
+            { href: "/shows", label: "Shows" },
+            { href: "/my-list", label: "My List" },
+          ].map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className="text-gray-400 transition hover:text-white hover:text-shadow"
+            >
+              {label}
+            </Link>
+          ))}
           {isAdmin && (
-            <Link href="/admin/upload" className="transition hover:text-gray-300">Admin</Link>
+            <Link href="/admin/upload" className="text-amber-400 transition hover:text-amber-300">
+              Admin
+            </Link>
           )}
         </nav>
       </div>
@@ -115,21 +94,21 @@ export default function Navbar() {
             placeholder="Search titles..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-64 rounded bg-zinc-900/90 px-4 py-2 text-sm text-white outline-none ring-1 ring-zinc-700 focus:ring-red-600"
+            className="w-56 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-blue-500/50 focus:shadow-[0_0_15px_rgba(59,130,246,0.2)] transition backdrop-blur-sm"
           />
         </form>
 
         {userEmail ? (
           <button
             onClick={handleSignOut}
-            className="rounded-full border border-purple-500/30 bg-purple-900/30 px-5 py-2 text-sm font-semibold text-purple-200 backdrop-blur-sm transition hover:bg-purple-900/50 hover:shadow-[0_0_15px_rgba(168,85,247,0.3)]"
+            className="rounded-full border border-blue-500/30 bg-blue-900/20 px-5 py-2 text-sm font-semibold text-blue-200 backdrop-blur-sm transition hover:bg-blue-900/40 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)]"
           >
             Sign Out
           </button>
         ) : (
           <Link
             href="/login"
-            className="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-[0_0_15px_rgba(168,85,247,0.4)] transition hover:shadow-[0_0_25px_rgba(168,85,247,0.6)]"
+            className="rounded-full bg-gradient-to-r from-blue-600 to-amber-500 px-5 py-2 text-sm font-semibold text-white shadow-[0_0_15px_rgba(59,130,246,0.3)] transition hover:shadow-[0_0_25px_rgba(245,158,11,0.4)]"
           >
             Sign In
           </Link>
