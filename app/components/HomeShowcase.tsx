@@ -37,9 +37,7 @@ export default function HomeShowcase() {
 
       setVideos(allVideos || []);
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
         const { data: history } = await supabase
@@ -61,57 +59,46 @@ export default function HomeShowcase() {
     const activeHistory = watchHistory.filter(
       (row) => row.progress_seconds > 0 && !row.completed
     );
-
     return activeHistory
       .map((row) => videos.find((video) => video.id === row.video_id))
       .filter(Boolean) as Video[];
   }, [videos, watchHistory]);
 
-  const continueWatchingIds = continueWatching.map((video) => video.id);
-
+  const continueWatchingIds = continueWatching.map((v) => v.id);
   const featuredVideo = videos.length > 0 ? videos[0] : null;
-  const latestVideos = videos.slice(0, 10);
   const featuredPicks = videos.slice(1, 4);
-  const movies = videos.filter((video) => video.content_type === "movie");
-  const shows = videos.filter((video) => video.content_type === "show");
+  const latestVideos = videos.slice(0, 10);
+  const movies = videos.filter((v) => v.content_type === "movie");
+  const shows = videos.filter((v) => v.content_type === "show");
 
   const topPicks = useMemo(() => {
-    const watchedGenres = continueWatching.map((video) => video.genre);
-
-    if (watchedGenres.length === 0) {
-      return videos.slice(0, 8);
-    }
-
+    const watchedGenres = continueWatching.map((v) => v.genre);
+    if (watchedGenres.length === 0) return videos.slice(0, 8);
     return videos.filter(
-      (video) =>
-        watchedGenres.includes(video.genre) &&
-        !continueWatchingIds.includes(video.id)
+      (v) => watchedGenres.includes(v.genre) && !continueWatchingIds.includes(v.id)
     );
   }, [videos, continueWatching, continueWatchingIds]);
 
-  const featuredGenre = featuredVideo?.genre;
-  const similarGenre =
-    featuredGenre
-      ? videos.filter(
-          (video) =>
-            video.genre === featuredGenre && video.id !== featuredVideo.id
-        )
-      : [];
+  const similarGenre = featuredVideo
+    ? videos.filter((v) => v.genre === featuredVideo.genre && v.id !== featuredVideo.id)
+    : [];
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-black text-white">
-        <HeroBanner featuredVideo={null} />
-        <div className="px-8 py-10 text-gray-400">Loading homepage...</div>
+      <main className="min-h-screen bg-[#060818] text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 rounded-full border-4 border-purple-500 border-t-transparent animate-spin mx-auto mb-4" />
+          <p className="text-purple-300 text-lg">Entering MigoPlay...</p>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-[#060818] text-white">
       <HeroBanner featuredVideo={featuredVideo} />
 
-      <div className="-mt-16 relative z-20 space-y-2 pb-12">
+      <div className="relative z-20 space-y-2 pb-16">
         <FeaturedCarousel items={featuredPicks} />
 
         {continueWatching.length > 0 && (
@@ -125,7 +112,7 @@ export default function HomeShowcase() {
         <ContentRow title="Latest on MigoPlay" items={latestVideos} />
         <ContentRow title="Movies" items={movies} />
         <ContentRow title="Shows" items={shows} />
-        <ContentRow title="Because you watched this genre" items={similarGenre} />
+        <ContentRow title="Because You Watched This Genre" items={similarGenre} />
       </div>
     </main>
   );
