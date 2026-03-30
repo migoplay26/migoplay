@@ -44,8 +44,8 @@ export default function LoginPage() {
             <Image
               src="/logo.png"
               alt="MigoPlay Logo"
-              width={180}
-              height={60}
+              width={720}
+              height={240}
               className="object-contain drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]"
               priority
             />
