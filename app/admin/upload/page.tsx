@@ -82,10 +82,7 @@ export default function AdminUploadPage() {
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#0a0a0f] text-white">
-        <div className="relative w-14 h-14">
-          <div className="absolute inset-0 rounded-full border-2 border-blue-500/20 animate-ping" />
-          <div className="absolute inset-1 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
-        </div>
+        <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
       </main>
     );
   }
@@ -94,9 +91,9 @@ export default function AdminUploadPage() {
     return (
       <main className="min-h-screen bg-[#0a0a0f] text-white">
         <Navbar />
-        <section className="px-6 md:px-12 pt-32">
-          <h1 className="text-4xl font-extrabold text-white mb-3">Access Denied</h1>
-          <p className="text-gray-400">This page is only for MigoPlay admins.</p>
+        <section className="px-4 md:px-12 pt-32">
+          <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
+          <p className="text-gray-500 text-sm">This page is only for MigoPlay admins.</p>
         </section>
       </main>
     );
@@ -105,77 +102,90 @@ export default function AdminUploadPage() {
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white">
       <Navbar />
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-600/8 blur-[120px] pointer-events-none" />
 
-      <section className="relative px-6 md:px-12 pt-32 pb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="h-8 w-1 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(37,99,235,0.8)]" />
-          <h1 className="text-5xl font-extrabold text-white">Admin Upload</h1>
-        </div>
-        <p className="text-gray-400 ml-4">Logged in as {userEmail}</p>
+      <section className="relative px-4 md:px-12 pt-28 md:pt-32 pb-6">
+        <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-2">
+          Admin Upload
+        </h1>
+        <p className="text-sm text-gray-500">Logged in as {userEmail}</p>
       </section>
 
-      <div className="mx-6 md:mx-12 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-8" />
+      <div className="mx-4 md:mx-12 h-px bg-white/5 mb-8" />
 
-      <section className="relative px-6 md:px-12 pb-16">
-        <div className="max-w-2xl rounded-2xl border border-white/10 bg-white/3 backdrop-blur-sm p-8">
-          <h2 className="text-2xl font-bold text-white mb-7">Add New Content</h2>
+      <section className="px-4 md:px-12 pb-16">
+        <div className="max-w-2xl rounded-lg border border-white/8 bg-white/3 p-6 md:p-8">
+          <h2 className="text-lg font-semibold text-white mb-6">Add New Content</h2>
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             {[
               { label: "Title", type: "text", value: title, setter: setTitle, placeholder: "Enter title" },
-              { label: "Genre", type: "text", value: genre, setter: setGenre, placeholder: "e.g. Drama, Sci-Fi" },
+              { label: "Genre", type: "text", value: genre, setter: setGenre, placeholder: "e.g. Drama, Sci-Fi, Action" },
             ].map(({ label, type, value, setter, placeholder }) => (
               <div key={label}>
-                <label className="mb-2 block text-sm font-medium text-gray-300">{label}</label>
-                <input type={type} value={value} onChange={(e) => setter(e.target.value)}
+                <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  {label}
+                </label>
+                <input type={type} value={value}
+                  onChange={(e) => setter(e.target.value)}
                   placeholder={placeholder}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-blue-500/60 focus:shadow-[0_0_15px_rgba(37,99,235,0.2)] transition"
+                  className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-white/25 transition"
                   required />
               </div>
             ))}
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-300">Description</label>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)}
-                placeholder="Enter description" rows={4}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-blue-500/60 focus:shadow-[0_0_15px_rgba(37,99,235,0.2)] transition"
+              <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Description
+              </label>
+              <textarea value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Enter description"
+                rows={4}
+                className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-white/25 transition"
                 required />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-300">Content Type</label>
-              <select value={contentType} onChange={(e) => setContentType(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-[#0a0a0f] px-4 py-3 text-white outline-none focus:border-blue-500/60 transition" required>
+              <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Content Type
+              </label>
+              <select value={contentType}
+                onChange={(e) => setContentType(e.target.value)}
+                className="w-full rounded border border-white/10 bg-[#0a0a0f] px-4 py-3 text-sm text-white outline-none focus:border-white/25 transition"
+                required>
                 <option value="movie">Movie</option>
                 <option value="show">Show</option>
               </select>
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-300">Thumbnail</label>
+              <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Thumbnail Image
+              </label>
               <input id="thumbnail-file" type="file" accept="image/*"
                 onChange={(e) => setThumbnailFile(e.target.files?.[0] ?? null)}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition file:mr-4 file:rounded-full file:border-0 file:bg-blue-600 file:px-4 file:py-1 file:text-sm file:font-semibold file:text-white"
+                className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition file:mr-4 file:rounded file:border-0 file:bg-white file:px-3 file:py-1 file:text-xs file:font-semibold file:text-black"
                 required />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-300">Video File</label>
+              <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Video File
+              </label>
               <input id="video-file" type="file" accept="video/*"
                 onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition file:mr-4 file:rounded-full file:border-0 file:bg-blue-600 file:px-4 file:py-1 file:text-sm file:font-semibold file:text-white"
+                className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition file:mr-4 file:rounded file:border-0 file:bg-white file:px-3 file:py-1 file:text-xs file:font-semibold file:text-black"
                 required />
             </div>
 
             <button type="submit" disabled={uploading}
-              className="w-full rounded-full bg-blue-600 py-3 font-bold text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] transition hover:bg-blue-500 hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed">
+              className="w-full rounded bg-white py-3 text-sm font-semibold text-black transition hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
               {uploading ? "Uploading..." : "Upload Content"}
             </button>
           </form>
 
           {message && (
-            <p className={`mt-5 text-sm ${message.startsWith("✅") ? "text-green-400" : "text-gray-400"}`}>
+            <p className={`mt-5 text-xs ${message.startsWith("✅") ? "text-green-400" : "text-gray-500"}`}>
               {message}
             </p>
           )}

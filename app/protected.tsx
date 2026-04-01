@@ -52,7 +52,11 @@ export default function Protected({ children }: { children: React.ReactNode }) {
   if (allowed === null) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+        <div className="relative w-16 h-16">
+          <div className="absolute inset-0 rounded-full border-2 border-purple-500/20 animate-ping" />
+          <div className="absolute inset-1 rounded-full border-2 border-purple-500 border-t-pink-400 animate-spin" />
+          <div className="absolute inset-4 rounded-full border border-pink-400/30" />
+          </div>
       </div>
     );
   }
