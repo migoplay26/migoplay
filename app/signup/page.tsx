@@ -24,65 +24,58 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center relative overflow-hidden">
-      {/* Stars */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(60)].map((_, i) => (
-          <div key={i} className="absolute rounded-full bg-white"
-            style={{ width: "1.5px", height: "1.5px", top: Math.random() * 100 + "%", left: Math.random() * 100 + "%", opacity: Math.random() * 0.6 + 0.1 }} />
-        ))}
-      </div>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(37,99,235,0.12)_0%,_transparent_65%)]" />
+    <main className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center relative px-4">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(29,78,216,0.08)_0%,_transparent_60%)]" />
 
-      <div className="relative z-10 w-full max-w-md px-4">
-        <div className="flex justify-center mb-8">
+      <div className="relative z-10 w-full max-w-sm">
+        <div className="flex justify-center mb-10">
           <Link href="/">
             <Image src="/logo.png" alt="MigoPlay Logo" width={720} height={240}
-              className="object-contain drop-shadow-[0_0_20px_rgba(37,99,235,0.5)]" priority />
+              className="object-contain" priority />
           </Link>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-white/4 backdrop-blur-md p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-          <h1 className="mb-1 text-3xl font-extrabold text-white">Create Account</h1>
-          <p className="mb-7 text-sm text-gray-400">Join MigoPlay today</p>
+        <div className="border border-white/8 bg-white/3 rounded-lg p-8">
+          <h1 className="text-2xl font-bold text-white mb-1 tracking-tight">Create Account</h1>
+          <p className="text-sm text-gray-500 mb-7">Join MigoPlay today</p>
 
           <form className="space-y-4" onSubmit={handleSignup}>
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-300">Full Name</label>
-              <input type="text" placeholder="Your full name" value={fullName}
+              <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">Full Name</label>
+              <input type="text" placeholder="Your name" value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-blue-500/60 focus:shadow-[0_0_15px_rgba(37,99,235,0.2)] transition"
+                className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-white/25 transition"
                 required />
             </div>
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-300">Email</label>
+              <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">Email</label>
               <input type="email" placeholder="your@email.com" value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-blue-500/60 focus:shadow-[0_0_15px_rgba(37,99,235,0.2)] transition"
+                className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-white/25 transition"
                 required />
             </div>
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-300">Password</label>
+              <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">Password</label>
               <input type="password" placeholder="••••••••" value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-blue-500/60 focus:shadow-[0_0_15px_rgba(37,99,235,0.2)] transition"
+                className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-white/25 transition"
                 required />
             </div>
             <button type="submit"
-              className="w-full rounded-full bg-blue-600 py-3 font-bold text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] transition hover:bg-blue-500 hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] hover:scale-[1.01]">
+              className="w-full rounded bg-white py-3 text-sm font-semibold text-black transition hover:bg-gray-100 mt-2">
               Create Account
             </button>
           </form>
 
           {message && (
-            <p className={`mt-4 text-sm ${message.startsWith("Account created") ? "text-green-400" : "text-gray-400"}`}>
+            <p className={`mt-4 text-xs ${message.startsWith("Account created") ? "text-gray-400" : "text-gray-500"}`}>
               {message}
             </p>
           )}
 
-          <p className="mt-6 text-sm text-gray-500 text-center">
+          <p className="mt-6 text-xs text-gray-600 text-center">
             Already have an account?{" "}
-            <Link href="/login" className="text-blue-400 hover:text-blue-300 font-semibold transition">
+            <Link href="/login" className="text-white hover:text-gray-300 transition">
               Sign in
             </Link>
           </p>
