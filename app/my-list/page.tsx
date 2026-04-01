@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
 import { supabase } from "../../lib/supabase";
+import { useProfile } from "../hooks/useProfile";
 
 type JoinedVideo = {
   id: number;
@@ -23,15 +24,14 @@ type SavedVideo = {
 export default function MyListPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [savedVideos, setSavedVideos] = useState<SavedVideo[]>([]);
   const [message, setMessage] = useState("");
+  const profile = useProfile();
 
   useEffect(() => {
     async function loadMyList() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
-      setUserEmail(user.email ?? null);
 
       const { data, error } = await supabase
         .from("my_list")
@@ -61,10 +61,7 @@ export default function MyListPage() {
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#0a0a0f] text-white">
-        <div className="relative w-14 h-14">
-          <div className="absolute inset-0 rounded-full border-2 border-blue-500/20 animate-ping" />
-          <div className="absolute inset-1 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
-        </div>
+        <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
       </main>
     );
   }
@@ -72,65 +69,69 @@ export default function MyListPage() {
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white">
       <Navbar />
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-600/8 blur-[120px] pointer-events-none" />
 
-      <section className="relative px-6 md:px-12 pt-32 pb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="h-8 w-1 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(37,99,235,0.8)]" />
-          <h1 className="text-5xl font-extrabold text-white">My List</h1>
-        </div>
-        <p className="text-gray-400 ml-4">Welcome back{userEmail ? `, ${userEmail}` : ""}.</p>
-        {message && <p className="mt-2 text-sm text-red-400 ml-4">{message}</p>}
+      <section className="relative px-4 md:px-12 pt-28 md:pt-32 pb-6">
+        {/* Profile greeting */}
+        {profile && (
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-base font-bold text-white flex-shrink-0"
+              style={{ backgroundColor: profile.colour }}>
+              {profile.initial}
+            </div>
+            <p className="text-sm text-gray-400">{profile.name}'s List</p>
+          </div>
+        )}
+
+        <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-2">My List</h1>
+        <p className="text-sm text-gray-500">Titles you've saved to watch later.</p>
+        {message && <p className="mt-2 text-xs text-red-400">{message}</p>}
       </section>
 
-      <div className="mx-6 md:mx-12 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-6" />
+      <div className="mx-4 md:mx-12 h-px bg-white/5 mb-6" />
 
-      <section className="relative px-6 md:px-12 pb-16">
+      <section className="px-4 md:px-12 pb-16">
         {savedVideos.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-white/3 p-12 text-center">
-            <p className="text-5xl mb-4">🎬</p>
-            <h2 className="text-2xl font-bold text-white mb-2">Your list is empty</h2>
-            <p className="text-gray-400 mb-6">Save titles to watch them later</p>
-            <Link
-              href="/browse"
-              className="inline-flex rounded-full bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] transition hover:bg-blue-500 hover:shadow-[0_0_25px_rgba(37,99,235,0.6)]"
-            >
+          <div className="rounded-lg border border-white/8 bg-white/3 p-10 text-center max-w-md mx-auto">
+            <p className="text-2xl mb-3">🎬</p>
+            <h2 className="text-lg font-semibold text-white mb-2">Nothing saved yet</h2>
+            <p className="text-sm text-gray-500 mb-6">
+              Browse content and save titles to watch later.
+            </p>
+            <Link href="/browse"
+              className="inline-flex rounded bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-gray-100">
               Browse Content
             </Link>
           </div>
         ) : (
-          <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <div className="grid gap-2 md:gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {savedVideos.map((item) => {
               const video = getVideoDetails(item.videos);
               if (!video) return null;
               return (
-                <div key={item.id} className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(37,99,235,0.3)] hover:z-10">
+                <div key={item.id}
+                  className="group relative overflow-hidden rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_8px_30px_rgba(0,0,0,0.6)] hover:z-10">
                   <Link href={`/watch/${video.id}`}>
-                    <img
-                      src={video.thumbnail_url}
-                      alt={video.title}
-                      className="h-[260px] w-full object-cover transition duration-500 group-hover:brightness-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300 bg-gradient-to-t from-blue-900/50 via-transparent to-white/5" />
+                    <img src={video.thumbnail_url} alt={video.title}
+                      className="h-[180px] md:h-[260px] w-full object-cover transition duration-500 group-hover:brightness-75" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent" />
                   </Link>
 
-                  <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <h2 className="text-sm font-bold text-white line-clamp-1 mb-2">{video.title}</h2>
+                  <div className="absolute inset-0 flex flex-col justify-end p-2 md:p-3 opacity-0 group-hover:opacity-100 transition duration-300">
+                    <h2 className="text-xs md:text-sm font-semibold text-white line-clamp-1 mb-2">{video.title}</h2>
                     <div className="flex gap-1.5">
-                      <Link
-                        href={`/watch/${video.id}`}
-                        className="flex-1 rounded-full bg-white py-1.5 text-center text-xs font-bold text-black transition hover:bg-gray-100"
-                      >
-                        ▶ Play
+                      <Link href={`/watch/${video.id}`}
+                        className="flex-1 rounded bg-white py-1.5 text-center text-xs font-semibold text-black transition hover:bg-gray-100">
+                        Play
                       </Link>
-                      <button
-                        onClick={() => handleRemove(item.id)}
-                        className="rounded-full border border-red-500/40 bg-red-950/50 px-3 py-1.5 text-xs font-semibold text-red-300 transition hover:bg-red-900/60"
-                      >
+                      <button onClick={() => handleRemove(item.id)}
+                        className="rounded border border-white/20 bg-black/50 px-2.5 py-1.5 text-xs text-white transition hover:bg-white/10">
                         ✕
                       </button>
                     </div>
+                  </div>
+
+                  <div className="absolute bottom-0 left-0 right-0 p-2 group-hover:opacity-0 transition duration-300">
+                    <p className="text-xs font-semibold text-white line-clamp-1">{video.title}</p>
                   </div>
                 </div>
               );
