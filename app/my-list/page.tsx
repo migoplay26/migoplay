@@ -6,6 +6,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import { supabase } from "../../lib/supabase";
 import { useProfile } from "../hooks/useProfile";
+import PageLoader from "../components/PageLoader";
 
 type JoinedVideo = {
   id: number;
@@ -58,13 +59,7 @@ export default function MyListPage() {
     return videos;
   }
 
-  if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#0a0a0f] text-white">
-        <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
-      </main>
-    );
-  }
+  if (loading) return <PageLoader />;
 
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white">

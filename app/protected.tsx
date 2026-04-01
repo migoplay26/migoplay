@@ -9,36 +9,32 @@ export default function Protected({ children }: { children: React.ReactNode }) {
   const [allowed, setAllowed] = useState<boolean | null>(null);
 
   const publicRoutes = ["/login", "/signup"];
-  const skipProfileCheck = ["/login", "/signup", "/profile-setup"];
+  const skipProfileCheck = ["/login", "/signup", "/profile-setup", "/select-profile"];
 
   useEffect(() => {
     async function checkAccess() {
-      // Allow login/signup pages
-      if (publicRoutes.includes(pathname)) {
-        setAllowed(true);
-        return;
-      }
+      if (publicRoutes.includes(pathname)) { setAllowed(true); return; }
 
       const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { window.location.href = "/login"; return; }
 
-      // Not logged in → go to login
-      if (!user) {
-        window.location.href = "/login";
-        return;
-      }
-
-      // Only this email is allowed
       const allowedEmail = "migoplay26@gmail.com";
-      if (user.email !== allowedEmail) {
-        setAllowed(false);
-        return;
-      }
+      if (user.email !== allowedEmail) { setAllowed(false); return; }
 
-      // Check if profile has been set up
       if (!skipProfileCheck.includes(pathname)) {
-        const savedProfile = localStorage.getItem(`profile_${user.id}`);
-        if (!savedProfile) {
+        const adultProfile = localStorage.getItem(`profile_adult_${user.id}`);
+        const kidsProfile = localStorage.getItem(`profile_kids_${user.id}`);
+        const activeProfile = localStorage.getItem(`profile_active_${user.id}`);
+
+        // No profiles at all → setup
+        if (!adultProfile && !kidsProfile) {
           window.location.href = "/profile-setup";
+          return;
+        }
+
+        // Has profiles but none active → select
+        if (!activeProfile) {
+          window.location.href = "/select-profile";
           return;
         }
       }
@@ -56,7 +52,7 @@ export default function Protected({ children }: { children: React.ReactNode }) {
           <div className="absolute inset-0 rounded-full border-2 border-purple-500/20 animate-ping" />
           <div className="absolute inset-1 rounded-full border-2 border-purple-500 border-t-pink-400 animate-spin" />
           <div className="absolute inset-4 rounded-full border border-pink-400/30" />
-          </div>
+        </div>
       </div>
     );
   }

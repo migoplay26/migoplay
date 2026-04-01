@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Navbar from "../../components/Navbar";
 import { supabase } from "../../../lib/supabase";
 import { useParams } from "next/navigation";
+import PageLoader from "../../components/PageLoader";
 
 type Video = {
   id: number;
@@ -133,19 +134,7 @@ export default function WatchPage() {
     setMessage("Added to My List.");
   }
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-[#0a0a0f] text-white">
-        <Navbar />
-        <div className="flex items-center justify-center pt-40">
-          <div className="relative w-14 h-14">
-            <div className="absolute inset-0 rounded-full border-2 border-blue-500/20 animate-ping" />
-            <div className="absolute inset-1 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
-          </div>
-        </div>
-      </main>
-    );
-  }
+  if (loading) return <PageLoader />;
 
   if (!video) {
     return (

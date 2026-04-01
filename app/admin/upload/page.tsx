@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import { supabase } from "../../../lib/supabase";
+import PageLoader from "../../components/PageLoader";
 
 export default function AdminUploadPage() {
   const router = useRouter();
@@ -79,13 +80,7 @@ export default function AdminUploadPage() {
     if (v) v.value = "";
   }
 
-  if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#0a0a0f] text-white">
-        <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
-      </main>
-    );
-  }
+  if (loading) return <PageLoader />;
 
   if (!isAdmin) {
     return (

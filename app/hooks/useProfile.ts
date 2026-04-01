@@ -5,6 +5,7 @@ type Profile = {
   name: string;
   colour: string;
   initial: string;
+  type?: "adult" | "kids";
 };
 
 export function useProfile() {
@@ -14,14 +15,17 @@ export function useProfile() {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const saved = localStorage.getItem(`profile_${user.id}`);
+
+      const activeType = localStorage.getItem(`profile_active_${user.id}`) ?? "adult";
+      const saved = localStorage.getItem(`profile_${activeType}_${user.id}`);
       if (saved) setProfile(JSON.parse(saved));
     }
     load();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_e, session) => {
       if (!session?.user) { setProfile(null); return; }
-      const saved = localStorage.getItem(`profile_${session.user.id}`);
+      const activeType = localStorage.getItem(`profile_active_${session.user.id}`) ?? "adult";
+      const saved = localStorage.getItem(`profile_${activeType}_${session.user.id}`);
       if (saved) setProfile(JSON.parse(saved));
       else setProfile(null);
     });

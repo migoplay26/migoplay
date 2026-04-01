@@ -66,9 +66,21 @@ export default function Navbar() {
     { href: "/my-list", label: "My List" },
   ];
 
+  const HeadsetIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+      <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+    </svg>
+  );
+
   return (
     <>
-      <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${scrolled ? "bg-[#0a0a0f]/98 backdrop-blur-md border-b border-white/5" : "bg-gradient-to-b from-[#0a0a0f]/80 to-transparent"} px-4 md:px-12 py-0 -mt-6`}>
+      <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+        scrolled
+          ? "bg-[#0a0a0f]/98 backdrop-blur-md border-b border-white/5"
+          : "bg-gradient-to-b from-[#0a0a0f]/80 to-transparent"
+      } px-4 md:px-12 py-0 -mt-6`}>
         <div className="flex items-center justify-between">
 
           {/* Logo */}
@@ -83,7 +95,7 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* Desktop nav */}
+          {/* Desktop nav links */}
           <nav className="hidden gap-6 text-sm font-medium md:flex">
             {navLinks.map(({ href, label }) => (
               <Link key={href} href={href}
@@ -101,6 +113,17 @@ export default function Navbar() {
 
           {/* Desktop right side */}
           <div className="hidden md:flex items-center gap-3">
+
+            {/* Headset contact button */}
+            <Link
+              href="/contact"
+              className="flex items-center justify-center w-9 h-9 rounded border border-white/10 bg-white/5 text-gray-400 transition hover:bg-white/10 hover:text-white"
+              title="Contact Us"
+            >
+              <HeadsetIcon />
+            </Link>
+
+            {/* Search */}
             <form onSubmit={handleSearchSubmit}>
               <input
                 type="text"
@@ -111,6 +134,7 @@ export default function Navbar() {
               />
             </form>
 
+            {/* Auth section */}
             {loggedIn ? (
               <div className="flex items-center gap-3">
                 {profile && (
@@ -126,6 +150,12 @@ export default function Navbar() {
                     </span>
                   </Link>
                 )}
+                <Link
+                  href="/select-profile"
+                  className="text-xs text-gray-500 hover:text-white transition hidden lg:block"
+                >
+                  Switch
+                </Link>
                 <button onClick={handleSignOut}
                   className="rounded border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10">
                   Sign Out
@@ -153,13 +183,17 @@ export default function Navbar() {
 
       {/* Mobile slide-in menu */}
       <div className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${menuOpen ? "visible" : "invisible"}`}>
+
+        {/* Backdrop */}
         <div
           className={`absolute inset-0 bg-black/70 transition-opacity duration-300 ${menuOpen ? "opacity-100" : "opacity-0"}`}
           onClick={() => setMenuOpen(false)}
         />
+
+        {/* Panel */}
         <div className={`absolute top-0 right-0 h-full w-72 bg-[#0d0d12] border-l border-white/5 transition-transform duration-300 flex flex-col ${menuOpen ? "translate-x-0" : "translate-x-full"}`}>
 
-          {/* Profile section */}
+          {/* Profile header */}
           <div className="flex items-center gap-3 px-6 pt-8 pb-6 border-b border-white/5">
             {profile ? (
               <>
@@ -176,7 +210,8 @@ export default function Navbar() {
             ) : (
               <Image src="/logo.png" alt="MigoPlay" width={100} height={35} className="object-contain" />
             )}
-            <button onClick={() => setMenuOpen(false)} className="text-gray-500 hover:text-white text-xl ml-auto">✕</button>
+            <button onClick={() => setMenuOpen(false)}
+              className="text-gray-500 hover:text-white text-xl ml-auto">✕</button>
           </div>
 
           {/* Search */}
@@ -195,12 +230,8 @@ export default function Navbar() {
           {/* Nav links */}
           <nav className="flex flex-col px-3 py-4 gap-0.5 flex-1">
             {navLinks.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                onClick={() => setMenuOpen(false)}
-                className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white"
-              >
+              <Link key={href} href={href} onClick={() => setMenuOpen(false)}
+                className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white">
                 {label}
               </Link>
             ))}
@@ -211,15 +242,33 @@ export default function Navbar() {
               </Link>
             )}
             {loggedIn && (
-              <Link href="/edit-profile" onClick={() => setMenuOpen(false)}
-                className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white">
-                Edit Profile
-              </Link>
+              <>
+                <Link href="/edit-profile" onClick={() => setMenuOpen(false)}
+                  className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white">
+                  Edit Profile
+                </Link>
+                <Link href="/select-profile" onClick={() => setMenuOpen(false)}
+                  className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white">
+                  Switch Profile
+                </Link>
+              </>
             )}
           </nav>
 
+          {/* Contact Us - mobile bottom */}
+          <div className="px-6 py-4 border-t border-white/5">
+            <Link
+              href="/contact"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-3 rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white"
+            >
+              <HeadsetIcon />
+              Contact Us
+            </Link>
+          </div>
+
           {/* Sign in/out */}
-          <div className="px-6 py-6 border-t border-white/5">
+          <div className="px-6 pb-8">
             {loggedIn ? (
               <button
                 onClick={() => { handleSignOut(); setMenuOpen(false); }}
