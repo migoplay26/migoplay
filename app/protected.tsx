@@ -32,10 +32,10 @@ export default function Protected({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Has profiles but none active → select
+        // Has at least one profile but none active → set first found as active
         if (!activeProfile) {
-          window.location.href = "/select-profile";
-          return;
+          const firstType = adultProfile ? "adult" : "kids";
+          localStorage.setItem(`profile_active_${user.id}`, firstType);
         }
       }
 
@@ -48,10 +48,13 @@ export default function Protected({ children }: { children: React.ReactNode }) {
   if (allowed === null) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
-        <div className="relative w-16 h-16">
-          <div className="absolute inset-0 rounded-full border-2 border-purple-500/20 animate-ping" />
-          <div className="absolute inset-1 rounded-full border-2 border-purple-500 border-t-pink-400 animate-spin" />
-          <div className="absolute inset-4 rounded-full border border-pink-400/30" />
+        <div className="text-center">
+          <div className="relative w-16 h-16 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full border-2 border-purple-500/20 animate-ping" />
+            <div className="absolute inset-1 rounded-full border-2 border-purple-500 border-t-pink-400 animate-spin" />
+            <div className="absolute inset-4 rounded-full border border-pink-400/30" />
+          </div>
+          <p className="text-gray-500 text-xs tracking-widest uppercase">Loading...</p>
         </div>
       </div>
     );

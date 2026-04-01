@@ -29,8 +29,15 @@ export default function ProfileSetupPage() {
 
   useEffect(() => {
     async function check() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push("/login"); return; }
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
       setUserId(user.id);
 
       const adult = localStorage.getItem(`profile_adult_${user.id}`);
@@ -38,14 +45,23 @@ export default function ProfileSetupPage() {
       const active = localStorage.getItem(`profile_active_${user.id}`);
 
       // If both profiles exist and one is active, go home
-      if (adult && kids && active) { router.push("/"); return; }
+      if (adult && kids && active) {
+        router.push("/");
+        return;
+      }
     }
+
     check();
   }, [router]);
 
   async function handleSave() {
-    if (!profileName.trim()) { setMessage("Please enter a profile name."); return; }
+    if (!profileName.trim()) {
+      setMessage("Please enter a profile name.");
+      return;
+    }
+
     if (!userId) return;
+
     setLoading(true);
 
     const profileData = {
@@ -55,7 +71,10 @@ export default function ProfileSetupPage() {
       type: profileType,
     };
 
-    localStorage.setItem(`profile_${profileType}_${userId}`, JSON.stringify(profileData));
+    localStorage.setItem(
+      `profile_${profileType}_${userId}`,
+      JSON.stringify(profileData)
+    );
     localStorage.setItem(`profile_active_${userId}`, profileType);
 
     // Check if other profile exists
@@ -67,7 +86,9 @@ export default function ProfileSetupPage() {
       setStep("choose");
       setProfileName("");
       setSelectedColour(AVATAR_COLOURS[0]);
-      setMessage(`${profileType === "adult" ? "Adult" : "Kids"} profile saved! Would you like to set up the ${otherType} profile too?`);
+      setMessage(
+        `${profileType === "adult" ? "Adult" : "Kids"} profile saved! Would you like to set up the ${otherType} profile too?`
+      );
       setLoading(false);
       return;
     }
@@ -75,7 +96,8 @@ export default function ProfileSetupPage() {
     router.push("/");
   }
 
-  const initial = profileName.trim()[0]?.toUpperCase() ?? "?";
+  const initial =
+    profileName.trim()[0]?.toUpperCase() ?? (profileType === "kids" ? "K" : "A");
 
   if (step === "choose") {
     return (
@@ -83,7 +105,7 @@ export default function ProfileSetupPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(29,78,216,0.08)_0%,_transparent_60%)]" />
         <div className="relative z-10 w-full max-w-lg">
           <h1 className="text-3xl font-bold text-white mb-2 tracking-tight text-center">
-            Who's Watching?
+            Who&apos;s Watching?
           </h1>
           <p className="text-sm text-gray-500 text-center mb-10">
             Set up your profiles on MigoPlay
@@ -98,7 +120,11 @@ export default function ProfileSetupPage() {
           <div className="grid grid-cols-2 gap-4 mb-8">
             {/* Adult profile */}
             <button
-              onClick={() => { setProfileType("adult"); setStep("setup"); setMessage(""); }}
+              onClick={() => {
+                setProfileType("adult");
+                setStep("setup");
+                setMessage("");
+              }}
               className="group rounded-lg border border-white/10 bg-white/5 p-6 text-center transition hover:border-white/25 hover:bg-white/8"
             >
               <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-2xl font-bold text-white mx-auto mb-3 transition group-hover:ring-2 group-hover:ring-white/20 group-hover:ring-offset-2 group-hover:ring-offset-[#0a0a0f]">
@@ -110,7 +136,11 @@ export default function ProfileSetupPage() {
 
             {/* Kids profile */}
             <button
-              onClick={() => { setProfileType("kids"); setStep("setup"); setMessage(""); }}
+              onClick={() => {
+                setProfileType("kids");
+                setStep("setup");
+                setMessage("");
+              }}
               className="group rounded-lg border border-white/10 bg-white/5 p-6 text-center transition hover:border-white/25 hover:bg-white/8"
             >
               <div className="w-16 h-16 rounded-full bg-yellow-500 flex items-center justify-center text-2xl font-bold text-white mx-auto mb-3 transition group-hover:ring-2 group-hover:ring-white/20 group-hover:ring-offset-2 group-hover:ring-offset-[#0a0a0f]">
@@ -136,7 +166,10 @@ export default function ProfileSetupPage() {
     <main className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(29,78,216,0.08)_0%,_transparent_60%)]" />
       <div className="relative z-10 w-full max-w-md">
-        <button onClick={() => setStep("choose")} className="text-xs text-gray-500 hover:text-white transition mb-6 flex items-center gap-2">
+        <button
+          onClick={() => setStep("choose")}
+          className="text-xs text-gray-500 hover:text-white transition mb-6 flex items-center gap-2"
+        >
           ← Back
         </button>
 
@@ -144,17 +177,37 @@ export default function ProfileSetupPage() {
           {profileType === "adult" ? "Adult Profile" : "Kids Profile"}
         </h1>
         <p className="text-sm text-gray-500 text-center mb-10">
-          {profileType === "kids" ? "Safe for all ages" : "Full access to all content"}
+          {profileType === "kids"
+            ? "Safe for all ages"
+            : "Full access to all content"}
         </p>
 
         {/* Avatar preview */}
-        <div className="flex justify-center mb-8">
+        <div className="flex flex-col items-center mb-8 gap-3">
           <div
             className="w-24 h-24 rounded-full flex items-center justify-center text-4xl font-bold text-white shadow-[0_0_30px_rgba(0,0,0,0.5)] transition-all duration-300"
             style={{ backgroundColor: selectedColour.hex }}
           >
             {initial}
           </div>
+
+          <p className="text-sm text-gray-400">
+            {profileName.trim() ? (
+              <span className="text-white font-semibold">
+                {profileName.trim()}
+              </span>
+            ) : (
+              <span className="text-gray-600">
+                Enter a name to see your avatar
+              </span>
+            )}
+          </p>
+
+          {/* Live colour preview label */}
+          <p className="text-xs text-gray-600">
+            {selectedColour.name} ·{" "}
+            {profileType === "kids" ? "Kids" : "Adult"} Profile
+          </p>
         </div>
 
         <div className="mb-6">
@@ -163,7 +216,11 @@ export default function ProfileSetupPage() {
           </label>
           <input
             type="text"
-            placeholder={profileType === "kids" ? "e.g. Mia, Leo, Junior" : "e.g. Alex, Dad, Mum"}
+            placeholder={
+              profileType === "kids"
+                ? "e.g. Mia, Leo, Junior"
+                : "e.g. Alex, Dad, Mum"
+            }
             value={profileName}
             onChange={(e) => setProfileName(e.target.value)}
             maxLength={20}
