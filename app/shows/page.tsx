@@ -1,18 +1,13 @@
 import { Suspense } from "react";
 import Navbar from "../components/Navbar";
 import ContentBrowser from "../components/ContentBrowser";
+import PageLoader from "../components/PageLoader";
 
 export default function ShowsPage() {
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-[#0a0a0f] text-white">
       <Navbar />
-      <Suspense
-        fallback={
-          <div className="px-8 pt-32 pb-12 text-gray-400">
-            Loading shows...
-          </div>
-        }
-      >
+      <Suspense fallback={<PageLoader />}>
         <ContentBrowser
           pageTitle="Shows"
           pageDescription="Browse all show content on MigoPlay."

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
+import PageLoader from "../components/PageLoader";
 import { supabase } from "../../lib/supabase";
 
 const AVATAR_COLOURS = [
@@ -23,43 +24,53 @@ export default function EditProfilePage() {
   const [selectedColour, setSelectedColour] = useState(AVATAR_COLOURS[0]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [activeType, setActiveType] = useState<string>("adult");
 
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
+      setUserId(user.id);
 
-      const saved = localStorage.getItem(`profile_${user.id}`);
+      const type = localStorage.getItem(`profile_active_${user.id}`) ?? "adult";
+      setActiveType(type);
+
+      const saved = localStorage.getItem(`profile_${type}_${user.id}`);
       if (saved) {
         const parsed = JSON.parse(saved);
-        setProfileName(parsed.name);
+        setProfileName(parsed.name ?? "");
         const colour = AVATAR_COLOURS.find((c) => c.hex === parsed.colour);
         if (colour) setSelectedColour(colour);
       }
+      setPageLoading(false);
     }
     load();
   }, [router]);
 
   async function handleSave() {
     if (!profileName.trim()) { setMessage("Please enter a profile name."); return; }
+    if (!userId) return;
     setLoading(true);
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { router.push("/login"); return; }
-
-    localStorage.setItem(`profile_${user.id}`, JSON.stringify({
+    const profileData = {
       name: profileName.trim(),
       colour: selectedColour.hex,
       initial: profileName.trim()[0].toUpperCase(),
-    }));
+      type: activeType,
+    };
+
+    localStorage.setItem(`profile_${activeType}_${userId}`, JSON.stringify(profileData));
 
     setMessage("Profile updated!");
     setLoading(false);
-
     setTimeout(() => router.push("/"), 1000);
   }
 
   const initial = profileName.trim()[0]?.toUpperCase() ?? "?";
+
+  if (pageLoading) return <PageLoader />;
 
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white">
@@ -69,13 +80,16 @@ export default function EditProfilePage() {
         <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-2">
           Edit Profile
         </h1>
-        <p className="text-sm text-gray-500">Update your name and avatar colour.</p>
+        <p className="text-sm text-gray-500">
+          Editing your <span className="text-white capitalize">{activeType}</span> profile.
+        </p>
       </section>
 
       <div className="mx-4 md:mx-12 h-px bg-white/5 mb-8" />
 
       <section className="px-4 md:px-12 pb-16">
         <div className="max-w-md">
+
           {/* Avatar preview */}
           <div className="flex items-center gap-5 mb-8">
             <div
@@ -86,7 +100,7 @@ export default function EditProfilePage() {
             </div>
             <div>
               <p className="text-base font-semibold text-white">{profileName || "Your Name"}</p>
-              <p className="text-xs text-gray-500 mt-0.5">MigoPlay Profile</p>
+              <p className="text-xs text-gray-500 mt-0.5 capitalize">{activeType} Profile</p>
             </div>
           </div>
 
@@ -140,10 +154,8 @@ export default function EditProfilePage() {
             >
               {loading ? "Saving..." : "Save Changes"}
             </button>
-            <Link
-              href="/"
-              className="rounded border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
-            >
+            <Link href="/"
+              className="rounded border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10">
               Cancel
             </Link>
           </div>
