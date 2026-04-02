@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar";
 const SUBJECTS = [
   "General Enquiry",
   "Technical Issue",
+  "Billing Issue",
   "Content Request",
   "Account Help",
   "Partnership",
@@ -24,7 +25,6 @@ export default function ContactPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    // Simulate submission — replace with your email service later
     await new Promise((res) => setTimeout(res, 1000));
     setSubmitted(true);
     setLoading(false);
@@ -48,14 +48,23 @@ export default function ContactPage() {
       <section className="px-4 md:px-12 pb-16">
         {submitted ? (
           <div className="max-w-md rounded-lg border border-white/10 bg-white/5 p-10 text-center">
-            <p className="text-3xl mb-4">✓</p>
+            <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 flex items-center justify-center mx-auto mb-4">
+              <span className="text-white text-lg">✓</span>
+            </div>
             <h2 className="text-xl font-bold text-white mb-2">Message Sent</h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mb-6">
               Thanks for reaching out! We'll get back to you within 24–48 hours.
             </p>
             <button
-              onClick={() => { setSubmitted(false); setName(""); setEmail(""); setPhone(""); setMessage(""); setSubject(SUBJECTS[0]); }}
-              className="mt-6 rounded bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-gray-100"
+              onClick={() => {
+                setSubmitted(false);
+                setName("");
+                setEmail("");
+                setPhone("");
+                setMessage("");
+                setSubject(SUBJECTS[0]);
+              }}
+              className="rounded bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-gray-100"
             >
               Send Another
             </button>
@@ -63,34 +72,59 @@ export default function ContactPage() {
         ) : (
           <div className="max-w-2xl rounded-lg border border-white/8 bg-white/3 p-6 md:p-8">
             <form className="space-y-5" onSubmit={handleSubmit}>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">Name</label>
-                  <input type="text" placeholder="Your full name" value={name}
+                  <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Your full name"
+                    value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-white/25 transition"
-                    required />
+                    required
+                  />
                 </div>
                 <div>
-                  <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">Email</label>
-                  <input type="email" placeholder="your@email.com" value={email}
+                  <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-white/25 transition"
-                    required />
+                    required
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">Phone Number</label>
-                  <input type="tel" placeholder="+44 7700 000000" value={phone}
+                  <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="+44 7700 000000"
+                    value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-white/25 transition" />
+                    className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-white/25 transition"
+                  />
                 </div>
                 <div>
-                  <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">Subject</label>
-                  <select value={subject} onChange={(e) => setSubject(e.target.value)}
-                    className="w-full rounded border border-white/10 bg-[#0a0a0f] px-4 py-3 text-sm text-white outline-none focus:border-white/25 transition" required>
+                  <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Subject
+                  </label>
+                  <select
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    className="w-full rounded border border-white/10 bg-[#0a0a0f] px-4 py-3 text-sm text-white outline-none focus:border-white/25 transition"
+                    required
+                  >
                     {SUBJECTS.map((s) => (
                       <option key={s} value={s} className="bg-[#0d1117]">{s}</option>
                     ))}
@@ -99,16 +133,24 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">Message</label>
-                <textarea value={message} onChange={(e) => setMessage(e.target.value)}
+                <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Message
+                </label>
+                <textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
                   placeholder="Tell us how we can help..."
                   rows={6}
                   className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-white/25 transition resize-none"
-                  required />
+                  required
+                />
               </div>
 
-              <button type="submit" disabled={loading}
-                className="w-full rounded bg-white py-3 text-sm font-semibold text-black transition hover:bg-gray-100 disabled:opacity-50">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded bg-white py-3 text-sm font-semibold text-black transition hover:bg-gray-100 disabled:opacity-50"
+              >
                 {loading ? "Sending..." : "Send Message"}
               </button>
             </form>

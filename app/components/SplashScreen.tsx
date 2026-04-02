@@ -3,9 +3,17 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-function playWhooshTone() {
+async function playWhooshTone() {
   try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+
+    const ctx = new AudioCtx();
+
+    // iOS/Android requires resume after creation
+    if (ctx.state === "suspended") {
+      await ctx.resume();
+    }
 
     // Whoosh — filtered noise
     const bufferSize = ctx.sampleRate * 1.2;
@@ -24,7 +32,7 @@ function playWhooshTone() {
 
     const whooshGain = ctx.createGain();
     whooshGain.gain.setValueAtTime(0, ctx.currentTime);
-    whooshGain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.2);
+    whooshGain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.2);
     whooshGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.8);
 
     whoosh.connect(filter);
@@ -41,7 +49,7 @@ function playWhooshTone() {
 
     const toneGain = ctx.createGain();
     toneGain.gain.setValueAtTime(0, ctx.currentTime + 0.5);
-    toneGain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.7);
+    toneGain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.7);
     toneGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.5);
 
     const reverb = ctx.createConvolver();
@@ -70,17 +78,13 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
   const [phase, setPhase] = useState<"waiting" | "beam" | "assemble" | "glow" | "fadeout">("waiting");
 
   useEffect(() => {
-    // Listen for first user interaction
-    function handleFirstInteraction() {
-      // Remove listeners immediately so it only fires once
+    async function handleFirstInteraction() {
       window.removeEventListener("click", handleFirstInteraction);
       window.removeEventListener("touchstart", handleFirstInteraction);
       window.removeEventListener("keydown", handleFirstInteraction);
 
-      // Play sound
-      playWhooshTone();
+      await playWhooshTone();
 
-      // Start animation
       setPhase("beam");
 
       const t1 = setTimeout(() => setPhase("assemble"), 600);
@@ -108,29 +112,35 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
   }, [onComplete]);
 
   return (
-    <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black transition-opacity duration-700 ${phase === "fadeout" ? "opacity-0" : "opacity-100"}`}>
+    <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black transition-opacity duration-700 ${
+      phase === "fadeout" ? "opacity-0" : "opacity-100"
+    }`}>
 
       {/* Stars */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(80)].map((_, i) => (
           <div key={i} className="absolute rounded-full bg-white"
             style={{
-              width: "1.5px", height: "1.5px",
+              width: "1.5px",
+              height: "1.5px",
               top: Math.random() * 100 + "%",
               left: Math.random() * 100 + "%",
               opacity: Math.random() * 0.4 + 0.1,
-            }} />
+            }}
+          />
         ))}
       </div>
 
-      {/* Tap to start hint — only shows while waiting */}
-      <div className={`absolute bottom-16 left-0 right-0 text-center transition-opacity duration-500 ${phase === "waiting" ? "opacity-100" : "opacity-0"}`}>
+      {/* Tap to start hint */}
+      <div className={`absolute bottom-16 left-0 right-0 text-center transition-opacity duration-500 ${
+        phase === "waiting" ? "opacity-100" : "opacity-0"
+      }`}>
         <p className="text-xs text-gray-600 tracking-widest uppercase animate-pulse">
           Tap anywhere to begin
         </p>
       </div>
 
-      {/* Blue light beam */}
+      {/* Light beam */}
       <div
         className="absolute top-0 bottom-0 w-[3px] blur-sm"
         style={{
@@ -162,7 +172,9 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
           : "opacity-100 scale-100 blur-0"
       }`}>
         <div
-          className={`absolute inset-0 rounded-full transition-all duration-700 ${phase === "glow" ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 rounded-full transition-all duration-700 ${
+            phase === "glow" ? "opacity-100" : "opacity-0"
+          }`}
           style={{ boxShadow: "0 0 80px 40px rgba(168,85,247,0.3)" }}
         />
 
@@ -180,7 +192,9 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
         />
 
         {/* Shimmer lines */}
-        <div className={`absolute inset-0 transition-opacity duration-500 ${phase === "assemble" ? "opacity-100" : "opacity-0"}`}>
+        <div className={`absolute inset-0 transition-opacity duration-500 ${
+          phase === "assemble" ? "opacity-100" : "opacity-0"
+        }`}>
           <div className="absolute top-1/2 left-0 right-0 h-px -translate-y-4"
             style={{ background: "linear-gradient(to right, transparent, rgba(168,85,247,0.5), transparent)" }} />
           <div className="absolute top-1/2 left-0 right-0 h-px translate-y-4"

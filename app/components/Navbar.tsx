@@ -67,8 +67,9 @@ export default function Navbar() {
   ];
 
   const HeadsetIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+      viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
       <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
     </svg>
@@ -84,7 +85,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center -ml-2 md:-ml-4" onClick={() => setMenuOpen(false)}>
+          <Link href="/" className="flex items-center -ml-2 md:-ml-4"
+            onClick={() => setMenuOpen(false)}>
             <Image
               src="/logo.png"
               alt="MigoPlay Logo"
@@ -95,7 +97,7 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* Desktop nav links */}
+          {/* Desktop nav */}
           <nav className="hidden gap-6 text-sm font-medium md:flex">
             {navLinks.map(({ href, label }) => (
               <Link key={href} href={href}
@@ -111,10 +113,10 @@ export default function Navbar() {
             )}
           </nav>
 
-          {/* Desktop right side */}
+          {/* Desktop right */}
           <div className="hidden md:flex items-center gap-3">
 
-            {/* Headset contact button */}
+            {/* Headset */}
             <Link
               href="/contact"
               className="flex items-center justify-center w-9 h-9 rounded border border-white/10 bg-white/5 text-gray-400 transition hover:bg-white/10 hover:text-white"
@@ -134,11 +136,11 @@ export default function Navbar() {
               />
             </form>
 
-            {/* Auth section */}
+            {/* Auth */}
             {loggedIn ? (
               <div className="flex items-center gap-3">
                 {profile && (
-                  <Link href="/edit-profile" className="flex items-center gap-2 group">
+                  <Link href="/manage-profile" className="flex items-center gap-2 group">
                     <div
                       className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 transition group-hover:ring-2 group-hover:ring-white/40 group-hover:ring-offset-1 group-hover:ring-offset-[#0a0a0f]"
                       style={{ backgroundColor: profile.colour }}
@@ -150,12 +152,6 @@ export default function Navbar() {
                     </span>
                   </Link>
                 )}
-                <Link
-                  href="/select-profile"
-                  className="text-xs text-gray-500 hover:text-white transition hidden lg:block"
-                >
-                  Switch
-                </Link>
                 <button onClick={handleSignOut}
                   className="rounded border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10">
                   Sign Out
@@ -181,22 +177,22 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Mobile slide-in menu */}
+      {/* Mobile menu */}
       <div className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${menuOpen ? "visible" : "invisible"}`}>
-
-        {/* Backdrop */}
         <div
           className={`absolute inset-0 bg-black/70 transition-opacity duration-300 ${menuOpen ? "opacity-100" : "opacity-0"}`}
           onClick={() => setMenuOpen(false)}
         />
-
-        {/* Panel */}
         <div className={`absolute top-0 right-0 h-full w-72 bg-[#0d0d12] border-l border-white/5 transition-transform duration-300 flex flex-col ${menuOpen ? "translate-x-0" : "translate-x-full"}`}>
 
-          {/* Profile header */}
+          {/* Profile header — tapping goes to manage profiles */}
           <div className="flex items-center gap-3 px-6 pt-8 pb-6 border-b border-white/5">
             {profile ? (
-              <>
+              <Link
+                href="/manage-profile"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 flex-1"
+              >
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center text-base font-bold text-white flex-shrink-0"
                   style={{ backgroundColor: profile.colour }}
@@ -205,10 +201,12 @@ export default function Navbar() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-white">{profile.name}</p>
+                  <p className="text-xs text-gray-500">Manage profiles</p>
                 </div>
-              </>
+              </Link>
             ) : (
-              <Image src="/logo.png" alt="MigoPlay" width={100} height={35} className="object-contain" />
+              <Image src="/logo.png" alt="MigoPlay" width={100} height={35}
+                className="object-contain" />
             )}
             <button onClick={() => setMenuOpen(false)}
               className="text-gray-500 hover:text-white text-xl ml-auto">✕</button>
@@ -242,20 +240,14 @@ export default function Navbar() {
               </Link>
             )}
             {loggedIn && (
-              <>
-                <Link href="/edit-profile" onClick={() => setMenuOpen(false)}
-                  className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white">
-                  Edit Profile
-                </Link>
-                <Link href="/select-profile" onClick={() => setMenuOpen(false)}
-                  className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white">
-                  Switch Profile
-                </Link>
-              </>
+              <Link href="/manage-profile" onClick={() => setMenuOpen(false)}
+                className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white">
+                My Profiles
+              </Link>
             )}
           </nav>
 
-          {/* Contact Us - mobile bottom */}
+          {/* Contact Us — mobile bottom */}
           <div className="px-6 py-4 border-t border-white/5">
             <Link
               href="/contact"
