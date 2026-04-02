@@ -239,12 +239,7 @@ export default function Navbar() {
                 Admin
               </Link>
             )}
-            {loggedIn && (
-              <Link href="/manage-profile" onClick={() => setMenuOpen(false)}
-                className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white">
-                My Profiles
-              </Link>
-            )}
+            
           </nav>
 
           {/* Contact Us — mobile bottom */}
