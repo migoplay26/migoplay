@@ -64,6 +64,7 @@ export default function ManageProfilePage() {
     if (!userId) return;
     localStorage.setItem(`active_profile_${userId}`, type);
     setActiveType(type);
+    window.dispatchEvent(new Event("profileChanged"));
     router.push("/");
   }
 
