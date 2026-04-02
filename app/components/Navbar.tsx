@@ -161,7 +161,8 @@ export default function Navbar() {
                     </span>
                   </Link>
                 )}
-                <button onClick={handleSignOut}
+                <button
+                  onClick={handleSignOut}
                   className="rounded border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10">
                   Sign Out
                 </button>
@@ -199,35 +200,38 @@ export default function Navbar() {
         {/* Panel */}
         <div className={`absolute top-0 right-0 h-full w-72 bg-[#0d0d12] border-l border-white/5 transition-transform duration-300 flex flex-col ${menuOpen ? "translate-x-0" : "translate-x-full"}`}>
 
-          {/* Profile header with pencil icon */}
-          <div className="flex items-center gap-3 px-6 pt-8 pb-6 border-b border-white/5">
+          {/* Profile header */}
+          <div className="flex items-center px-6 pt-8 pb-6 border-b border-white/5">
             {profile ? (
-              <Link
-                href="/manage-profile"
-                onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 flex-1 group"
+              <button
+                onPointerUp={() => {
+                  setMenuOpen(false);
+                  window.location.href = "/manage-profile";
+                }}
+                className="flex items-center gap-3 flex-1 text-left"
+                style={{ WebkitTapHighlightColor: "transparent" }}
               >
-                {/* Avatar with pencil overlay */}
+                {/* Avatar with pencil badge */}
                 <div className="relative flex-shrink-0">
                   <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white transition group-hover:ring-2 group-hover:ring-white/40 group-hover:ring-offset-1 group-hover:ring-offset-[#0d0d12]"
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white"
                     style={{ backgroundColor: profile.colour }}
                   >
                     {profile.initial}
                   </div>
                   {/* Pencil badge */}
-                  <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-md">
+                  <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-md pointer-events-none">
                     <PencilIcon />
                   </div>
                 </div>
 
                 <div>
-                  <p className="text-sm font-semibold text-white group-hover:text-gray-300 transition">
+                  <p className="text-sm font-semibold text-white">
                     {profile.name}
                   </p>
                   <p className="text-xs text-gray-500">Tap to edit profile</p>
                 </div>
-              </Link>
+              </button>
             ) : (
               <Image
                 src="/logo.png"
@@ -255,55 +259,71 @@ export default function Navbar() {
           {/* Nav links */}
           <nav className="flex flex-col px-3 py-4 gap-0.5 flex-1">
             {navLinks.map(({ href, label }) => (
-              <Link
+              <button
                 key={href}
-                href={href}
-                onClick={() => setMenuOpen(false)}
-                className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white"
+                onPointerUp={() => {
+                  setMenuOpen(false);
+                  window.location.href = href;
+                }}
+                className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white text-left w-full"
+                style={{ WebkitTapHighlightColor: "transparent" }}
               >
                 {label}
-              </Link>
+              </button>
             ))}
             {isAdmin && (
-              <Link
-                href="/admin/upload"
-                onClick={() => setMenuOpen(false)}
-                className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white"
+              <button
+                onPointerUp={() => {
+                  setMenuOpen(false);
+                  window.location.href = "/admin/upload";
+                }}
+                className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white text-left w-full"
+                style={{ WebkitTapHighlightColor: "transparent" }}
               >
                 Admin
-              </Link>
+              </button>
             )}
           </nav>
 
           {/* Contact Us */}
           <div className="px-6 py-4 border-t border-white/5">
-            <Link
-              href="/contact"
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-3 rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white"
+            <button
+              onPointerUp={() => {
+                setMenuOpen(false);
+                window.location.href = "/contact";
+              }}
+              className="flex items-center gap-3 rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white w-full"
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <HeadsetIcon />
               Contact Us
-            </Link>
+            </button>
           </div>
 
           {/* Sign in/out */}
           <div className="px-6 pb-8">
             {loggedIn ? (
               <button
-                onClick={() => { handleSignOut(); setMenuOpen(false); }}
+                onPointerUp={() => {
+                  setMenuOpen(false);
+                  handleSignOut();
+                }}
                 className="w-full rounded border border-white/10 bg-white/5 py-2.5 text-sm font-medium text-white transition hover:bg-white/10"
+                style={{ WebkitTapHighlightColor: "transparent" }}
               >
                 Sign Out
               </button>
             ) : (
-              <Link
-                href="/login"
-                onClick={() => setMenuOpen(false)}
+              <button
+                onPointerUp={() => {
+                  setMenuOpen(false);
+                  window.location.href = "/login";
+                }}
                 className="block w-full rounded bg-white py-2.5 text-center text-sm font-semibold text-black transition hover:bg-gray-100"
+                style={{ WebkitTapHighlightColor: "transparent" }}
               >
                 Sign In
-              </Link>
+              </button>
             )}
           </div>
         </div>
