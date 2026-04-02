@@ -11,13 +11,40 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setLoading(true);
     setMessage("Signing in...");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) { setMessage(error.message); return; }
-    router.push("/browse");
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      setMessage(error.message);
+      setLoading(false);
+      return;
+    }
+
+    const user = data.user;
+    if (!user) { setMessage("Something went wrong."); setLoading(false); return; }
+
+    // Clear active profile so it always asks who's watching after login
+    localStorage.removeItem(`active_profile_${user.id}`);
+
+    // Check if user has profiles already
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("profile_type")
+      .eq("user_id", user.id);
+
+    if (profiles && profiles.length > 0) {
+      // Has profiles — go to who's watching
+      router.push("/select-profile");
+    } else {
+      // No profiles — go to setup
+      router.push("/profile-setup");
+    }
   }
 
   return (
@@ -27,8 +54,14 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-sm">
         <div className="flex justify-center mb-10">
           <Link href="/">
-            <Image src="/logo.png" alt="MigoPlay Logo" width={720} height={240}
-              className="object-contain" priority />
+            <Image
+              src="/logo.png"
+              alt="MigoPlay Logo"
+              width={720}
+              height={240}
+              className="object-contain"
+              priority
+            />
           </Link>
         </div>
 
@@ -38,26 +71,43 @@ export default function LoginPage() {
 
           <form className="space-y-4" onSubmit={handleLogin}>
             <div>
-              <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">Email</label>
-              <input type="email" placeholder="your@email.com" value={email}
+              <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Email
+              </label>
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-white/25 transition"
-                required />
+                required
+              />
             </div>
             <div>
-              <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">Password</label>
-              <input type="password" placeholder="••••••••" value={password}
+              <label className="mb-2 block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full rounded border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-white/25 transition"
-                required />
+                required
+              />
             </div>
-            <button type="submit"
-              className="w-full rounded bg-white py-3 text-sm font-semibold text-black transition hover:bg-gray-100 mt-2">
-              Sign In
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded bg-white py-3 text-sm font-semibold text-black transition hover:bg-gray-100 disabled:opacity-50 mt-2"
+            >
+              {loading ? "Signing in..." : "Sign In"}
             </button>
           </form>
 
-          {message && <p className="mt-4 text-xs text-gray-500">{message}</p>}
+          {message && (
+            <p className="mt-4 text-xs text-gray-500">{message}</p>
+          )}
 
           <p className="mt-6 text-xs text-gray-600 text-center">
             New to MigoPlay?{" "}

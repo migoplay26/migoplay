@@ -13,30 +13,53 @@ export default function Protected({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function checkAccess() {
-      if (publicRoutes.includes(pathname)) { setAllowed(true); return; }
+      // Public routes — allow immediately
+      if (publicRoutes.includes(pathname)) {
+        setAllowed(true);
+        return;
+      }
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { window.location.href = "/login"; return; }
+      // Get session — faster than getUser() on mobile
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session?.user) {
+        window.location.href = "/login";
+        return;
+      }
+
+      const user = session.user;
 
       const allowedEmail = "migoplay26@gmail.com";
-      if (user.email !== allowedEmail) { setAllowed(false); return; }
+      if (user.email !== allowedEmail) {
+        setAllowed(false);
+        return;
+      }
 
-      if (!skipProfileCheck.includes(pathname)) {
-        const adultProfile = localStorage.getItem(`profile_adult_${user.id}`);
-        const kidsProfile = localStorage.getItem(`profile_kids_${user.id}`);
-        const activeProfile = localStorage.getItem(`profile_active_${user.id}`);
+      // Skip profile check for profile pages
+      if (skipProfileCheck.includes(pathname)) {
+        setAllowed(true);
+        return;
+      }
 
-        // No profiles at all → setup
-        if (!adultProfile && !kidsProfile) {
+      // Check if active profile is selected
+      const activeProfile = localStorage.getItem(`active_profile_${user.id}`);
+
+      if (!activeProfile) {
+        // Check Supabase for profiles — only if no active profile in localStorage
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("profile_type")
+          .eq("user_id", user.id)
+          .limit(1);
+
+        if (!profiles || profiles.length === 0) {
           window.location.href = "/profile-setup";
           return;
         }
 
-        // Has at least one profile but none active → set first found as active
-        if (!activeProfile) {
-          const firstType = adultProfile ? "adult" : "kids";
-          localStorage.setItem(`profile_active_${user.id}`, firstType);
-        }
+        // Has profiles but none selected — go to select
+        window.location.href = "/select-profile";
+        return;
       }
 
       setAllowed(true);
@@ -65,7 +88,9 @@ export default function Protected({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-screen items-center justify-center bg-[#0a0a0f] text-white">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
-          <p className="text-gray-500 text-sm">You don't have permission to view this page.</p>
+          <p className="text-gray-500 text-sm">
+            You don't have permission to view this page.
+          </p>
         </div>
       </div>
     );
