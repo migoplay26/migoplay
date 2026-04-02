@@ -129,12 +129,14 @@ export default function ProfileSetupPage() {
   function handleSelectProfile(type: "adult" | "kids") {
     if (!userId) return;
     localStorage.setItem(`active_profile_${userId}`, type);
+    window.dispatchEvent(new Event("profileChanged"));
     router.push("/");
   }
 
   function handleEnterWithAdultOnly() {
     if (!userId) return;
     localStorage.setItem(`active_profile_${userId}`, "adult");
+    window.dispatchEvent(new Event("profileChanged"));
     router.push("/");
   }
 
