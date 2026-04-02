@@ -9,17 +9,23 @@ export default function Protected({ children }: { children: React.ReactNode }) {
   const [allowed, setAllowed] = useState<boolean | null>(null);
 
   const publicRoutes = ["/login", "/signup"];
-  const skipProfileCheck = ["/login", "/signup", "/profile-setup", "/select-profile"];
+  const profileRoutes = ["/profile-setup", "/select-profile"];
 
   useEffect(() => {
     async function checkAccess() {
-      // Public routes — allow immediately
+      // Always allow public routes
       if (publicRoutes.includes(pathname)) {
         setAllowed(true);
         return;
       }
 
-      // Get session — faster than getUser() on mobile
+      // Always allow profile routes without any extra checks
+      if (profileRoutes.includes(pathname)) {
+        setAllowed(true);
+        return;
+      }
+
+      // Get session quickly
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session?.user) {
@@ -28,24 +34,18 @@ export default function Protected({ children }: { children: React.ReactNode }) {
       }
 
       const user = session.user;
-
       const allowedEmail = "migoplay26@gmail.com";
+
       if (user.email !== allowedEmail) {
         setAllowed(false);
         return;
       }
 
-      // Skip profile check for profile pages
-      if (skipProfileCheck.includes(pathname)) {
-        setAllowed(true);
-        return;
-      }
-
-      // Check if active profile is selected
+      // Check active profile in localStorage
       const activeProfile = localStorage.getItem(`active_profile_${user.id}`);
 
       if (!activeProfile) {
-        // Check Supabase for profiles — only if no active profile in localStorage
+        // No active profile — check if they have any in Supabase
         const { data: profiles } = await supabase
           .from("profiles")
           .select("profile_type")
@@ -53,6 +53,7 @@ export default function Protected({ children }: { children: React.ReactNode }) {
           .limit(1);
 
         if (!profiles || profiles.length === 0) {
+          // No profiles at all — go to setup
           window.location.href = "/profile-setup";
           return;
         }
@@ -62,6 +63,7 @@ export default function Protected({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      // Has active profile — allow
       setAllowed(true);
     }
 
