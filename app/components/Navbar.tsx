@@ -24,11 +24,11 @@ export default function Navbar() {
 
   useEffect(() => {
     async function getUserAndAdminStatus() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoggedIn(false); setIsAdmin(false); return; }
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) { setLoggedIn(false); setIsAdmin(false); return; }
       setLoggedIn(true);
       const { data: adminRow } = await supabase
-        .from("admins").select("user_id").eq("user_id", user.id).maybeSingle();
+        .from("admins").select("user_id").eq("user_id", session.user.id).maybeSingle();
       setIsAdmin(!!adminRow);
     }
 
@@ -47,7 +47,7 @@ export default function Navbar() {
 
   async function handleSignOut() {
     await supabase.auth.signOut();
-    window.location.href = "/";
+    window.location.href = "/login";
   }
 
   function handleSearchSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -72,6 +72,15 @@ export default function Navbar() {
       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
       <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+    </svg>
+  );
+
+  const PencilIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+      viewBox="0 0 24 24" fill="none" stroke="black"
+      strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
     </svg>
   );
 
@@ -116,7 +125,7 @@ export default function Navbar() {
           {/* Desktop right */}
           <div className="hidden md:flex items-center gap-3">
 
-            {/* Headset */}
+            {/* Headset contact button */}
             <Link
               href="/contact"
               className="flex items-center justify-center w-9 h-9 rounded border border-white/10 bg-white/5 text-gray-400 transition hover:bg-white/10 hover:text-white"
@@ -169,6 +178,7 @@ export default function Navbar() {
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="md:hidden flex flex-col gap-1.5 p-2"
+            aria-label="Toggle menu"
           >
             <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
             <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
@@ -177,39 +187,56 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Mobile menu */}
+      {/* Mobile slide-in menu */}
       <div className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${menuOpen ? "visible" : "invisible"}`}>
+
+        {/* Backdrop */}
         <div
           className={`absolute inset-0 bg-black/70 transition-opacity duration-300 ${menuOpen ? "opacity-100" : "opacity-0"}`}
           onClick={() => setMenuOpen(false)}
         />
+
+        {/* Panel */}
         <div className={`absolute top-0 right-0 h-full w-72 bg-[#0d0d12] border-l border-white/5 transition-transform duration-300 flex flex-col ${menuOpen ? "translate-x-0" : "translate-x-full"}`}>
 
-          {/* Profile header — tapping goes to manage profiles */}
+          {/* Profile header with pencil icon */}
           <div className="flex items-center gap-3 px-6 pt-8 pb-6 border-b border-white/5">
             {profile ? (
               <Link
                 href="/manage-profile"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 flex-1"
+                className="flex items-center gap-3 flex-1 group"
               >
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-base font-bold text-white flex-shrink-0"
-                  style={{ backgroundColor: profile.colour }}
-                >
-                  {profile.initial}
+                {/* Avatar with pencil overlay */}
+                <div className="relative flex-shrink-0">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white transition group-hover:ring-2 group-hover:ring-white/40 group-hover:ring-offset-1 group-hover:ring-offset-[#0d0d12]"
+                    style={{ backgroundColor: profile.colour }}
+                  >
+                    {profile.initial}
+                  </div>
+                  {/* Pencil badge */}
+                  <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-md">
+                    <PencilIcon />
+                  </div>
                 </div>
+
                 <div>
-                  <p className="text-sm font-semibold text-white">{profile.name}</p>
-                  <p className="text-xs text-gray-500">Manage profiles</p>
+                  <p className="text-sm font-semibold text-white group-hover:text-gray-300 transition">
+                    {profile.name}
+                  </p>
+                  <p className="text-xs text-gray-500">Tap to edit profile</p>
                 </div>
               </Link>
             ) : (
-              <Image src="/logo.png" alt="MigoPlay" width={100} height={35}
-                className="object-contain" />
+              <Image
+                src="/logo.png"
+                alt="MigoPlay"
+                width={100}
+                height={35}
+                className="object-contain"
+              />
             )}
-            <button onClick={() => setMenuOpen(false)}
-              className="text-gray-500 hover:text-white text-xl ml-auto">✕</button>
           </div>
 
           {/* Search */}
@@ -228,21 +255,27 @@ export default function Navbar() {
           {/* Nav links */}
           <nav className="flex flex-col px-3 py-4 gap-0.5 flex-1">
             {navLinks.map(({ href, label }) => (
-              <Link key={href} href={href} onClick={() => setMenuOpen(false)}
-                className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white">
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setMenuOpen(false)}
+                className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white"
+              >
                 {label}
               </Link>
             ))}
             {isAdmin && (
-              <Link href="/admin/upload" onClick={() => setMenuOpen(false)}
-                className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white">
+              <Link
+                href="/admin/upload"
+                onClick={() => setMenuOpen(false)}
+                className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white"
+              >
                 Admin
               </Link>
             )}
-            
           </nav>
 
-          {/* Contact Us — mobile bottom */}
+          {/* Contact Us */}
           <div className="px-6 py-4 border-t border-white/5">
             <Link
               href="/contact"
@@ -264,8 +297,11 @@ export default function Navbar() {
                 Sign Out
               </button>
             ) : (
-              <Link href="/login" onClick={() => setMenuOpen(false)}
-                className="block w-full rounded bg-white py-2.5 text-center text-sm font-semibold text-black transition hover:bg-gray-100">
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="block w-full rounded bg-white py-2.5 text-center text-sm font-semibold text-black transition hover:bg-gray-100"
+              >
                 Sign In
               </Link>
             )}
