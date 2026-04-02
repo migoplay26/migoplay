@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import PageLoader from "../components/PageLoader";
 import { supabase } from "../../lib/supabase";
 
 const AVATAR_COLOURS = [
@@ -16,8 +17,13 @@ const AVATAR_COLOURS = [
   { name: "Yellow", hex: "#eab308" },
 ];
 
-type ProfileType = "adult" | "kids";
 type Step = "create-adult" | "created-adult" | "create-kids" | "done";
+
+type ProfileData = {
+  name: string;
+  colour: string;
+  initial: string;
+};
 
 export default function ProfileSetupPage() {
   const router = useRouter();
@@ -25,10 +31,11 @@ export default function ProfileSetupPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [profileName, setProfileName] = useState("");
   const [selectedColour, setSelectedColour] = useState(AVATAR_COLOURS[0]);
-  const [adultProfile, setAdultProfile] = useState<{ name: string; colour: string; initial: string } | null>(null);
-  const [kidsProfile, setKidsProfile] = useState<{ name: string; colour: string; initial: string } | null>(null);
+  const [adultProfile, setAdultProfile] = useState<ProfileData | null>(null);
+  const [kidsProfile, setKidsProfile] = useState<ProfileData | null>(null);
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
     async function check() {
@@ -36,38 +43,54 @@ export default function ProfileSetupPage() {
       if (!user) { router.push("/login"); return; }
       setUserId(user.id);
 
-      const adult = localStorage.getItem(`profile_adult_${user.id}`);
-      const kids = localStorage.getItem(`profile_kids_${user.id}`);
+      // Load existing profiles from Supabase
+      const { data: existingProfiles } = await supabase
+        .from("profiles")
+        .select("name, colour, initial, profile_type")
+        .eq("user_id", user.id);
+
+      const adult = existingProfiles?.find((p) => p.profile_type === "adult");
+      const kids = existingProfiles?.find((p) => p.profile_type === "kids");
 
       if (adult && kids) {
-        // Both exist — go to select profile
-        localStorage.setItem(`profile_active_${user.id}`, "adult");
+        // Both exist — go straight to select
         router.push("/select-profile");
         return;
       }
 
       if (adult) {
-        setAdultProfile(JSON.parse(adult));
+        setAdultProfile({ name: adult.name, colour: adult.colour, initial: adult.initial });
         setStep("created-adult");
+        setPageLoading(false);
         return;
       }
+
+      setPageLoading(false);
     }
     check();
   }, [router]);
 
-  function handleSaveAdult() {
+  async function handleSaveAdult() {
     if (!profileName.trim()) { setMessage("Please enter a name."); return; }
     if (!userId) return;
     setSaving(true);
 
-    const data = {
+    const data: ProfileData = {
       name: profileName.trim(),
       colour: selectedColour.hex,
       initial: profileName.trim()[0].toUpperCase(),
-      type: "adult",
     };
 
-    localStorage.setItem(`profile_adult_${userId}`, JSON.stringify(data));
+    const { error } = await supabase.from("profiles").upsert({
+      user_id: userId,
+      profile_type: "adult",
+      name: data.name,
+      colour: data.colour,
+      initial: data.initial,
+    }, { onConflict: "user_id,profile_type" });
+
+    if (error) { setMessage(error.message); setSaving(false); return; }
+
     setAdultProfile(data);
     setProfileName("");
     setSelectedColour(AVATAR_COLOURS[0]);
@@ -76,38 +99,48 @@ export default function ProfileSetupPage() {
     setStep("created-adult");
   }
 
-  function handleSaveKids() {
+  async function handleSaveKids() {
     if (!profileName.trim()) { setMessage("Please enter a name."); return; }
     if (!userId) return;
     setSaving(true);
 
-    const data = {
+    const data: ProfileData = {
       name: profileName.trim(),
       colour: selectedColour.hex,
       initial: profileName.trim()[0].toUpperCase(),
-      type: "kids",
     };
 
-    localStorage.setItem(`profile_kids_${userId}`, JSON.stringify(data));
+    const { error } = await supabase.from("profiles").upsert({
+      user_id: userId,
+      profile_type: "kids",
+      name: data.name,
+      colour: data.colour,
+      initial: data.initial,
+    }, { onConflict: "user_id,profile_type" });
+
+    if (error) { setMessage(error.message); setSaving(false); return; }
+
     setKidsProfile(data);
     setMessage("");
     setSaving(false);
     setStep("done");
   }
 
-  function handleSelectProfile(type: ProfileType) {
+  function handleSelectProfile(type: "adult" | "kids") {
     if (!userId) return;
-    localStorage.setItem(`profile_active_${userId}`, type);
+    localStorage.setItem(`active_profile_${userId}`, type);
     router.push("/");
   }
 
   function handleEnterWithAdultOnly() {
-    if (!userId || !adultProfile) return;
-    localStorage.setItem(`profile_active_${userId}`, "adult");
+    if (!userId) return;
+    localStorage.setItem(`active_profile_${userId}`, "adult");
     router.push("/");
   }
 
   const initial = profileName.trim()[0]?.toUpperCase() ?? (step === "create-kids" ? "K" : "A");
+
+  if (pageLoading) return <PageLoader />;
 
   // Step 1 — Create adult profile
   if (step === "create-adult") {
@@ -190,7 +223,7 @@ export default function ProfileSetupPage() {
     );
   }
 
-  // Step 2 — Adult created, ask if they want to add kids profile
+  // Step 2 — Adult created, show profile and option to add kids
   if (step === "created-adult") {
     return (
       <main className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center px-4">
@@ -206,7 +239,6 @@ export default function ProfileSetupPage() {
           </p>
 
           <div className="flex justify-center gap-8 flex-wrap mb-10">
-            {/* Adult profile — clickable to enter */}
             {adultProfile && (
               <button
                 onClick={handleEnterWithAdultOnly}
@@ -225,7 +257,6 @@ export default function ProfileSetupPage() {
               </button>
             )}
 
-            {/* Add Kids Profile button */}
             <button
               onClick={() => setStep("create-kids")}
               className="group flex flex-col items-center gap-3"
@@ -332,7 +363,7 @@ export default function ProfileSetupPage() {
     );
   }
 
-  // Step 4 — Both profiles created, select who's watching
+  // Step 4 — Both profiles done, select who's watching
   if (step === "done") {
     return (
       <main className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center px-4">

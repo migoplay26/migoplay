@@ -22,7 +22,7 @@ type Profile = {
   name: string;
   colour: string;
   initial: string;
-  type: "adult" | "kids";
+  profile_type: string;
 };
 
 export default function ManageProfilePage() {
@@ -30,12 +30,20 @@ export default function ManageProfilePage() {
   const [pageLoading, setPageLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [activeType, setActiveType] = useState<string>("adult");
-  const [profiles, setProfiles] = useState<{ type: string; data: Profile }[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
   const [editingType, setEditingType] = useState<string | null>(null);
   const [profileName, setProfileName] = useState("");
   const [selectedColour, setSelectedColour] = useState(AVATAR_COLOURS[0]);
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
+
+  async function loadProfiles(uid: string) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("name, colour, initial, profile_type")
+      .eq("user_id", uid);
+    if (data) setProfiles(data);
+  }
 
   useEffect(() => {
     async function load() {
@@ -43,15 +51,10 @@ export default function ManageProfilePage() {
       if (!user) { router.push("/login"); return; }
       setUserId(user.id);
 
-      const type = localStorage.getItem(`profile_active_${user.id}`) ?? "adult";
+      const type = localStorage.getItem(`active_profile_${user.id}`) ?? "adult";
       setActiveType(type);
 
-      const found: { type: string; data: Profile }[] = [];
-      for (const t of ["adult", "kids"]) {
-        const saved = localStorage.getItem(`profile_${t}_${user.id}`);
-        if (saved) found.push({ type: t, data: JSON.parse(saved) });
-      }
-      setProfiles(found);
+      await loadProfiles(user.id);
       setPageLoading(false);
     }
     load();
@@ -59,14 +62,15 @@ export default function ManageProfilePage() {
 
   function handleSwitchProfile(type: string) {
     if (!userId) return;
-    localStorage.setItem(`profile_active_${userId}`, type);
+    localStorage.setItem(`active_profile_${userId}`, type);
+    setActiveType(type);
     router.push("/");
   }
 
-  function handleStartEdit(type: string, data: Profile) {
-    setEditingType(type);
-    setProfileName(data.name);
-    const colour = AVATAR_COLOURS.find((c) => c.hex === data.colour);
+  function handleStartEdit(profile: Profile) {
+    setEditingType(profile.profile_type);
+    setProfileName(profile.name);
+    const colour = AVATAR_COLOURS.find((c) => c.hex === profile.colour);
     if (colour) setSelectedColour(colour);
     setMessage("");
   }
@@ -82,21 +86,17 @@ export default function ManageProfilePage() {
     if (!userId || !editingType) return;
     setSaving(true);
 
-    const profileData: Profile = {
+    const { error } = await supabase.from("profiles").upsert({
+      user_id: userId,
+      profile_type: editingType,
       name: profileName.trim(),
       colour: selectedColour.hex,
       initial: profileName.trim()[0].toUpperCase(),
-      type: editingType as "adult" | "kids",
-    };
+    }, { onConflict: "user_id,profile_type" });
 
-    localStorage.setItem(`profile_${editingType}_${userId}`, JSON.stringify(profileData));
+    if (error) { setMessage(error.message); setSaving(false); return; }
 
-    const found: { type: string; data: Profile }[] = [];
-    for (const t of ["adult", "kids"]) {
-      const saved = localStorage.getItem(`profile_${t}_${userId}`);
-      if (saved) found.push({ type: t, data: JSON.parse(saved) });
-    }
-    setProfiles(found);
+    await loadProfiles(userId);
     setEditingType(null);
     setSaving(false);
     setMessage("");
@@ -130,11 +130,11 @@ export default function ManageProfilePage() {
                 Your Profiles
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                {profiles.map(({ type, data }) => (
+                {profiles.map((profile) => (
                   <div
-                    key={type}
+                    key={profile.profile_type}
                     className={`rounded-lg border p-5 transition ${
-                      activeType === type
+                      activeType === profile.profile_type
                         ? "border-white/20 bg-white/8"
                         : "border-white/8 bg-white/3"
                     }`}
@@ -142,15 +142,15 @@ export default function ManageProfilePage() {
                     <div className="flex items-center gap-4 mb-4">
                       <div
                         className="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold text-white flex-shrink-0"
-                        style={{ backgroundColor: data.colour }}
+                        style={{ backgroundColor: profile.colour }}
                       >
-                        {data.initial}
+                        {profile.initial}
                       </div>
                       <div>
-                        <p className="text-base font-semibold text-white">{data.name}</p>
+                        <p className="text-base font-semibold text-white">{profile.name}</p>
                         <p className="text-xs text-gray-500 capitalize mt-0.5">
-                          {data.type} Profile
-                          {activeType === type && (
+                          {profile.profile_type} Profile
+                          {activeType === profile.profile_type && (
                             <span className="ml-2 text-green-400">● Active</span>
                           )}
                         </p>
@@ -158,16 +158,16 @@ export default function ManageProfilePage() {
                     </div>
 
                     <div className="flex gap-2">
-                      {activeType !== type && (
+                      {activeType !== profile.profile_type && (
                         <button
-                          onClick={() => handleSwitchProfile(type)}
+                          onClick={() => handleSwitchProfile(profile.profile_type)}
                           className="flex-1 rounded bg-white py-2 text-xs font-semibold text-black transition hover:bg-gray-100"
                         >
                           Switch to this
                         </button>
                       )}
                       <button
-                        onClick={() => handleStartEdit(type, data)}
+                        onClick={() => handleStartEdit(profile)}
                         className="flex-1 rounded border border-white/10 bg-white/5 py-2 text-xs font-medium text-white transition hover:bg-white/10"
                       >
                         Edit
