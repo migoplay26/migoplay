@@ -94,7 +94,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center -ml-2 md:-ml-4"
+          <Link href="/"
+            className="flex items-center -ml-2 md:-ml-4"
             onClick={() => setMenuOpen(false)}>
             <Image
               src="/logo.png"
@@ -175,7 +176,7 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile hamburger */}
+          {/* Mobile hamburger — animates into X */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="md:hidden flex flex-col gap-1.5 p-2"
@@ -189,22 +190,31 @@ export default function Navbar() {
       </header>
 
       {/* Mobile slide-in menu */}
-      <div className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${menuOpen ? "visible" : "invisible"}`}>
+      <div className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
+        menuOpen ? "visible" : "invisible"
+      }`}>
 
-        {/* Backdrop */}
+        {/* Backdrop — tap to close */}
         <div
-          className={`absolute inset-0 bg-black/70 transition-opacity duration-300 ${menuOpen ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 bg-black/70 transition-opacity duration-300 ${
+            menuOpen ? "opacity-100" : "opacity-0"
+          }`}
           onClick={() => setMenuOpen(false)}
         />
 
-        {/* Panel */}
-        <div className={`absolute top-0 right-0 h-full w-72 bg-[#0d0d12] border-l border-white/5 transition-transform duration-300 flex flex-col ${menuOpen ? "translate-x-0" : "translate-x-full"}`} style={{ touchAction: "pan-y" }}>
+        {/* Slide panel */}
+        <div
+          className={`absolute top-0 right-0 h-full w-72 bg-[#0d0d12] border-l border-white/5 transition-transform duration-300 flex flex-col ${
+            menuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+          style={{ touchAction: "pan-y" }}
+        >
 
-          {/* Profile header */}
-          <div className="flex items-center px-6 pt-8 pb-6 border-b border-white/5">
+          {/* Profile header — NO X button */}
+          <div className="px-6 pt-8 pb-6 border-b border-white/5">
             {profile ? (
               <button
-                onPointerUp={() => {
+                onClick={() => {
                   setMenuOpen(false);
                   window.location.href = "/manage-profile";
                 }}
@@ -214,8 +224,11 @@ export default function Navbar() {
                   setMenuOpen(false);
                   window.location.href = "/manage-profile";
                 }}
-                className="flex items-center gap-3 flex-1 text-left"
-                style={{ WebkitTapHighlightColor: "transparent", touchAction: "manipulation" }}
+                className="flex items-center gap-3 w-full text-left relative z-10"
+                style={{
+                  WebkitTapHighlightColor: "transparent",
+                  touchAction: "manipulation",
+                }}
               >
                 {/* Avatar with pencil badge */}
                 <div className="relative flex-shrink-0">
@@ -267,24 +280,42 @@ export default function Navbar() {
             {navLinks.map(({ href, label }) => (
               <button
                 key={href}
-                onPointerUp={() => {
+                onClick={() => {
+                  setMenuOpen(false);
+                  window.location.href = href;
+                }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
                   setMenuOpen(false);
                   window.location.href = href;
                 }}
                 className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white text-left w-full"
-                style={{ WebkitTapHighlightColor: "transparent" }}
+                style={{
+                  WebkitTapHighlightColor: "transparent",
+                  touchAction: "manipulation",
+                }}
               >
                 {label}
               </button>
             ))}
             {isAdmin && (
               <button
-                onPointerUp={() => {
+                onClick={() => {
+                  setMenuOpen(false);
+                  window.location.href = "/admin/upload";
+                }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
                   setMenuOpen(false);
                   window.location.href = "/admin/upload";
                 }}
                 className="rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white text-left w-full"
-                style={{ WebkitTapHighlightColor: "transparent" }}
+                style={{
+                  WebkitTapHighlightColor: "transparent",
+                  touchAction: "manipulation",
+                }}
               >
                 Admin
               </button>
@@ -294,12 +325,21 @@ export default function Navbar() {
           {/* Contact Us */}
           <div className="px-6 py-4 border-t border-white/5">
             <button
-              onPointerUp={() => {
+              onClick={() => {
+                setMenuOpen(false);
+                window.location.href = "/contact";
+              }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
                 setMenuOpen(false);
                 window.location.href = "/contact";
               }}
               className="flex items-center gap-3 rounded px-4 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white w-full"
-              style={{ WebkitTapHighlightColor: "transparent" }}
+              style={{
+                WebkitTapHighlightColor: "transparent",
+                touchAction: "manipulation",
+              }}
             >
               <HeadsetIcon />
               Contact Us
@@ -310,23 +350,41 @@ export default function Navbar() {
           <div className="px-6 pb-8">
             {loggedIn ? (
               <button
-                onPointerUp={() => {
+                onClick={() => {
+                  setMenuOpen(false);
+                  handleSignOut();
+                }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
                   setMenuOpen(false);
                   handleSignOut();
                 }}
                 className="w-full rounded border border-white/10 bg-white/5 py-2.5 text-sm font-medium text-white transition hover:bg-white/10"
-                style={{ WebkitTapHighlightColor: "transparent" }}
+                style={{
+                  WebkitTapHighlightColor: "transparent",
+                  touchAction: "manipulation",
+                }}
               >
                 Sign Out
               </button>
             ) : (
               <button
-                onPointerUp={() => {
+                onClick={() => {
                   setMenuOpen(false);
                   window.location.href = "/login";
                 }}
-                className="block w-full rounded bg-white py-2.5 text-center text-sm font-semibold text-black transition hover:bg-gray-100"
-                style={{ WebkitTapHighlightColor: "transparent" }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setMenuOpen(false);
+                  window.location.href = "/login";
+                }}
+                className="w-full rounded bg-white py-2.5 text-center text-sm font-semibold text-black transition hover:bg-gray-100"
+                style={{
+                  WebkitTapHighlightColor: "transparent",
+                  touchAction: "manipulation",
+                }}
               >
                 Sign In
               </button>
