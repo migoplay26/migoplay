@@ -198,7 +198,7 @@ export default function Navbar() {
         />
 
         {/* Panel */}
-        <div className={`absolute top-0 right-0 h-full w-72 bg-[#0d0d12] border-l border-white/5 transition-transform duration-300 flex flex-col ${menuOpen ? "translate-x-0" : "translate-x-full"}`}>
+        <div className={`absolute top-0 right-0 h-full w-72 bg-[#0d0d12] border-l border-white/5 transition-transform duration-300 flex flex-col ${menuOpen ? "translate-x-0" : "translate-x-full"}`} style={{ touchAction: "pan-y" }}>
 
           {/* Profile header */}
           <div className="flex items-center px-6 pt-8 pb-6 border-b border-white/5">
@@ -208,8 +208,14 @@ export default function Navbar() {
                   setMenuOpen(false);
                   window.location.href = "/manage-profile";
                 }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setMenuOpen(false);
+                  window.location.href = "/manage-profile";
+                }}
                 className="flex items-center gap-3 flex-1 text-left"
-                style={{ WebkitTapHighlightColor: "transparent" }}
+                style={{ WebkitTapHighlightColor: "transparent", touchAction: "manipulation" }}
               >
                 {/* Avatar with pencil badge */}
                 <div className="relative flex-shrink-0">
