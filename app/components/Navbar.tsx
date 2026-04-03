@@ -67,18 +67,34 @@ export default function Navbar() {
   ];
 
   const HeadsetIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-      viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
       <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
     </svg>
   );
 
   const PencilIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"
-      viewBox="0 0 24 24" fill="none" stroke="black"
-      strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="10"
+      height="10"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="black"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
     </svg>
@@ -86,17 +102,21 @@ export default function Navbar() {
 
   return (
     <>
-      <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        scrolled
-          ? "bg-[#0a0a0f]/98 backdrop-blur-md border-b border-white/5"
-          : "bg-gradient-to-b from-[#0a0a0f]/80 to-transparent"
-      } px-4 md:px-12 py-0 -mt-6`}>
+      <header
+        className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+          scrolled
+            ? "bg-[#0a0a0f]/98 backdrop-blur-md border-b border-white/5"
+            : "bg-gradient-to-b from-[#0a0a0f]/80 to-transparent"
+        } px-4 md:px-12 py-0 -mt-6`}
+      >
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link href="/"
+          <Link
+            href="/"
             className="flex items-center -ml-2 md:-ml-4"
-            onClick={() => setMenuOpen(false)}>
+            onClick={() => setMenuOpen(false)}
+          >
             <Image
               src="/logo.png"
               alt="MigoPlay Logo"
@@ -110,20 +130,25 @@ export default function Navbar() {
           {/* Desktop nav */}
           <nav className="hidden gap-6 text-sm font-medium md:flex">
             {navLinks.map(({ href, label }) => (
-              <Link key={href} href={href}
-                className="text-gray-400 transition hover:text-white">
+              <Link
+                key={href}
+                href={href}
+                className="text-gray-400 transition hover:text-white"
+              >
                 {label}
               </Link>
             ))}
             {isAdmin && (
-              <Link href="/admin/upload"
-                className="text-gray-400 transition hover:text-white">
+              <Link
+                href="/admin/upload"
+                className="text-gray-400 transition hover:text-white"
+              >
                 Admin
               </Link>
             )}
           </nav>
 
-          {/* Desktop right */}
+          {/* Desktop right side */}
           <div className="hidden md:flex items-center gap-3">
 
             {/* Headset contact button */}
@@ -146,7 +171,7 @@ export default function Navbar() {
               />
             </form>
 
-            {/* Auth */}
+            {/* Desktop auth + profile */}
             {loggedIn ? (
               <div className="flex items-center gap-3">
                 {profile && (
@@ -164,37 +189,73 @@ export default function Navbar() {
                 )}
                 <button
                   onClick={handleSignOut}
-                  className="rounded border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10">
+                  className="rounded border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+                >
                   Sign Out
                 </button>
               </div>
             ) : (
-              <Link href="/login"
-                className="rounded bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-gray-100">
+              <Link
+                href="/login"
+                className="rounded bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-gray-100"
+              >
                 Sign In
               </Link>
             )}
           </div>
 
-          {/* Mobile hamburger — animates into X */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden flex flex-col gap-1.5 p-2"
-            aria-label="Toggle menu"
-          >
-            <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
-            <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
-            <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
-          </button>
+          {/* Mobile right side — profile icon + hamburger */}
+          <div className="flex md:hidden items-center gap-2">
+
+            {/* Mobile profile button — sits next to hamburger */}
+            {loggedIn && profile && (
+              <button
+                onClick={() => { window.location.href = "/manage-profile"; }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  window.location.href = "/manage-profile";
+                }}
+                className="relative flex-shrink-0"
+                style={{
+                  WebkitTapHighlightColor: "transparent",
+                  touchAction: "manipulation",
+                }}
+              >
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
+                  style={{ backgroundColor: profile.colour }}
+                >
+                  {profile.initial}
+                </div>
+                {/* Pencil badge */}
+                <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-white flex items-center justify-center shadow-md pointer-events-none">
+                  <PencilIcon />
+                </div>
+              </button>
+            )}
+
+            {/* Hamburger */}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="flex flex-col gap-1.5 p-2"
+              aria-label="Toggle menu"
+            >
+              <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
+              <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
+              <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+            </button>
+          </div>
         </div>
       </header>
 
       {/* Mobile slide-in menu */}
-      <div className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
-        menuOpen ? "visible" : "invisible"
-      }`}>
-
-        {/* Backdrop — tap to close */}
+      <div
+        className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
+          menuOpen ? "visible" : "invisible"
+        }`}
+      >
+        {/* Backdrop */}
         <div
           className={`absolute inset-0 bg-black/70 transition-opacity duration-300 ${
             menuOpen ? "opacity-100" : "opacity-0"
@@ -202,64 +263,28 @@ export default function Navbar() {
           onClick={() => setMenuOpen(false)}
         />
 
-        {/* Slide panel */}
+        {/* Panel */}
         <div
           className={`absolute top-0 right-0 h-full w-72 bg-[#0d0d12] border-l border-white/5 transition-transform duration-300 flex flex-col ${
             menuOpen ? "translate-x-0" : "translate-x-full"
           }`}
-          style={{ touchAction: "pan-y" }}
         >
-
-          {/* Profile header — NO X button */}
-          <div className="px-6 pt-8 pb-6 border-b border-white/5">
-            {profile ? (
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  window.location.href = "/manage-profile";
-                }}
-                onTouchEnd={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setMenuOpen(false);
-                  window.location.href = "/manage-profile";
-                }}
-                className="flex items-center gap-3 w-full text-left relative z-10"
-                style={{
-                  WebkitTapHighlightColor: "transparent",
-                  touchAction: "manipulation",
-                }}
-              >
-                {/* Avatar with pencil badge */}
-                <div className="relative flex-shrink-0">
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white"
-                    style={{ backgroundColor: profile.colour }}
-                  >
-                    {profile.initial}
-                  </div>
-                  {/* Pencil badge */}
-                  <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-md pointer-events-none">
-                    <PencilIcon />
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-sm font-semibold text-white">
-                    {profile.name}
-                  </p>
-                  <p className="text-xs text-gray-500">Tap to edit profile</p>
-                </div>
-              </button>
-            ) : (
-              <Image
-                src="/logo.png"
-                alt="MigoPlay"
-                width={100}
-                height={35}
-                className="object-contain"
-              />
-            )}
+          {/* Panel header with logo and X */}
+          <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-white/5">
+            <Image
+              src="/logo.png"
+              alt="MigoPlay"
+              width={90}
+              height={32}
+              className="object-contain"
+            />
+            <button
+              onClick={() => setMenuOpen(false)}
+              className="text-gray-400 hover:text-white transition text-2xl leading-none"
+              aria-label="Close menu"
+            >
+              ✕
+            </button>
           </div>
 
           {/* Search */}
